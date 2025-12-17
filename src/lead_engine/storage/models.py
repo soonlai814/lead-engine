@@ -4,6 +4,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Optional
 
+import os
 from sqlalchemy import (
     Boolean,
     Column,
@@ -15,11 +16,20 @@ from sqlalchemy import (
     String,
     Text,
     create_engine,
+    event,
+    text,
 )
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 Base = declarative_base()
+
+# Get schema name from environment, default to 'public'
+_DEFAULT_SCHEMA = os.getenv("DATABASE_SCHEMA", "public")
 
 
 class SourceType(str, Enum):
@@ -76,6 +86,7 @@ class SerpResult(Base):
     """Raw SERP results for audit/debug."""
 
     __tablename__ = "serp_results"
+    __table_args__ = {"schema": _DEFAULT_SCHEMA}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     provider = Column(String(50), nullable=False, default="serpapi")
@@ -95,6 +106,7 @@ class DiscoveryTarget(Base):
     """Normalized URL target to crawl."""
 
     __tablename__ = "discovery_targets"
+    __table_args__ = {"schema": _DEFAULT_SCHEMA}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     source_type = Column(SQLEnum(SourceType), nullable=False, index=True)
@@ -116,6 +128,7 @@ class Company(Base):
     """Canonical company record."""
 
     __tablename__ = "companies"
+    __table_args__ = {"schema": _DEFAULT_SCHEMA}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     company_name = Column(String(255), nullable=True)
@@ -135,6 +148,7 @@ class SignalSnapshot(Base):
     """Evidence for scoring (time-series friendly)."""
 
     __tablename__ = "signal_snapshots"
+    __table_args__ = {"schema": _DEFAULT_SCHEMA}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     company_domain = Column(String(255), nullable=False, index=True)
@@ -153,6 +167,7 @@ class Lead(Base):
     """Routable lead for outreach."""
 
     __tablename__ = "leads"
+    __table_args__ = {"schema": _DEFAULT_SCHEMA}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     company_domain = Column(String(255), nullable=False, index=True)
@@ -170,10 +185,40 @@ class Lead(Base):
         return f"<Lead(domain={self.company_domain}, route={self.route_flag}, mvp_score={self.mvp_intent_score})>"
 
 
-def create_database_session(database_url: str):
-    """Create database engine and session factory."""
+def create_database_session(database_url: str, schema_name: Optional[str] = None):
+    """
+    Create database engine and session factory.
+    
+    Args:
+        database_url: PostgreSQL connection string
+        schema_name: Optional schema name. If not provided, uses DATABASE_SCHEMA env var or 'public'
+    
+    Returns:
+        SessionLocal: SQLAlchemy session factory
+    """
+    # Use provided schema_name, or get from environment, or default to 'public'
+    schema = schema_name or os.getenv("DATABASE_SCHEMA", "public")
+    
+    # Create engine
     engine = create_engine(database_url, echo=False)
+    
+    # Set search_path for the connection to use the specified schema
+    @event.listens_for(engine, "connect", insert=True)
+    def set_search_path(dbapi_conn, connection_record):
+        """Set search_path on connection to use the specified schema."""
+        cursor = dbapi_conn.cursor()
+        cursor.execute(f"SET search_path TO {schema}, public")
+        cursor.close()
+    
+    # Create schema if it doesn't exist (only if not 'public')
+    if schema != "public":
+        with engine.connect() as conn:
+            conn.execute(text(f"CREATE SCHEMA IF NOT EXISTS {schema}"))
+            conn.commit()
+    
+    # Create all tables in the specified schema
     Base.metadata.create_all(engine)
+    
     SessionLocal = sessionmaker(bind=engine)
     return SessionLocal
 

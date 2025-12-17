@@ -106,12 +106,15 @@ class SerpAPIProvider:
             query: Search query
             pages: Number of pages to fetch
             results_per_page: Results per page (num parameter)
-            **kwargs: Additional SerpAPI parameters
+            **kwargs: Additional SerpAPI parameters (num will be overridden by results_per_page)
         
         Returns:
             Combined list of results from all pages
         """
         all_results = []
+        
+        # Remove 'num' from kwargs if present, since we'll set it explicitly
+        kwargs_clean = {k: v for k, v in kwargs.items() if k != "num"}
         
         for page in range(pages):
             start = page * results_per_page
@@ -123,7 +126,7 @@ class SerpAPIProvider:
                     query=query,
                     num=results_per_page,
                     start=start,
-                    **kwargs
+                    **kwargs_clean
                 )
                 
                 if not page_results:

@@ -61,8 +61,14 @@ class Fetcher:
         self.global_requests = []
         
         # HTTP client
+        # httpx.Timeout requires either a default or all four parameters
         self.client = httpx.Client(
-            timeout=httpx.Timeout(connect=self.connect_timeout, read=self.read_timeout),
+            timeout=httpx.Timeout(
+                connect=self.connect_timeout,
+                read=self.read_timeout,
+                write=self.read_timeout,  # Use read timeout for write
+                pool=self.connect_timeout,  # Use connect timeout for pool
+            ),
             follow_redirects=True,
         )
     

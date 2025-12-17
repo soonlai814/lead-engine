@@ -46,11 +46,17 @@ createdb lead_engine
 
 4. **Run discovery**:
 ```bash
-# Run hiring discovery
+# Run hiring discovery (all hiring packs)
 python -m lead_engine run --source hiring
+
+# Run a specific query pack (useful for testing!)
+python -m lead_engine run --pack test_hiring_v1
 
 # Run all sources
 python -m lead_engine run --all
+
+# Dry-run mode (no database writes)
+python -m lead_engine run --pack test_hiring_v1 --dry-run
 
 # Export leads
 python -m lead_engine export

@@ -35,7 +35,10 @@ python -m lead_engine --help
 # 2. Test with dry-run (no database writes, no API costs)
 python -m lead_engine run --source hiring --dry-run
 
-# 3. Check logs output (should see JSON logs)
+# 3. Test specific query pack (useful for testing!)
+python -m lead_engine run --pack test_hiring_v1 --dry-run
+
+# 4. Check logs output (should see JSON logs)
 python -m lead_engine run --source hiring --dry-run 2>&1 | head -20
 ```
 
@@ -53,34 +56,32 @@ Dry-run mode allows you to test the pipeline without:
 ### Test Discovery Only (Dry Run)
 
 ```bash
-# Test hiring discovery in dry-run mode
+# Test hiring discovery in dry-run mode (runs ALL hiring packs)
 python -m lead_engine run --source hiring --dry-run
+
+# Test a SPECIFIC query pack (recommended for testing!)
+python -m lead_engine run --pack test_hiring_v1 --dry-run
 ```
 
 **What happens:**
 - ✅ Config files are loaded
 - ✅ Orchestrator initializes
-- ✅ SERP queries are prepared (but not executed if you want to skip)
-- ✅ No database writes
+- ✅ SERP queries are executed (makes real API calls)
+- ✅ No database writes (in dry-run mode)
 - ✅ Logs show what would happen
 
 **Check logs for:**
 - `"Orchestrator initialized"`
-- `"Running discovery for source type"`
+- `"Running discovery for query pack"` (if using --pack)
+- `"Running discovery for source type"` (if using --source)
 - `"Found query packs"`
 - `"Processing query pack"`
 
 ### Limiting Test Scope
 
-To test with minimal SerpAPI calls, temporarily modify `config/query_packs.yaml`:
+**Option 1: Use a Test Query Pack (Recommended)**
 
-```yaml
-hiring_greenhouse_v1:
-  pages: 1  # Reduce from 3 to 1
-  results_per_page: 5  # Reduce from 10 to 5
-```
-
-Or create a test query pack:
+Create a test query pack in `config/query_packs.yaml`:
 
 ```yaml
 # config/query_packs.yaml
@@ -100,8 +101,29 @@ test_hiring_v1:
 
 Then test with:
 ```bash
+# Run ONLY the test pack (not all hiring packs)
+python -m lead_engine run --pack test_hiring_v1 --dry-run
+
+# Or run it for real
+python -m lead_engine run --pack test_hiring_v1
+```
+
+**Option 2: Temporarily Modify Existing Packs**
+
+Temporarily modify `config/query_packs.yaml` to reduce scope:
+
+```yaml
+hiring_greenhouse_v1:
+  pages: 1  # Reduce from 3 to 1
+  results_per_page: 5  # Reduce from 10 to 5
+```
+
+Then test with:
+```bash
 python -m lead_engine run --source hiring --dry-run
 ```
+
+**Note:** Using `--pack` is better for testing as it only runs the specific pack you want, avoiding running all packs for that source type.
 
 ---
 
@@ -122,8 +144,11 @@ SessionLocal = create_database_session(os.getenv('DATABASE_URL'))
 print('✅ Database ready')
 "
 
-# 2. Run full pipeline for hiring
+# 2. Run full pipeline for hiring (ALL hiring packs)
 python -m lead_engine run --source hiring
+
+# OR run just your test pack (recommended for first test)
+python -m lead_engine run --pack test_hiring_v1
 
 # 3. Check what was discovered
 python -c "

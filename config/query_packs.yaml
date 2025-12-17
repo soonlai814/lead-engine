@@ -5,6 +5,18 @@ query_packs:
   # ============================================
   # Hiring — ATS Packs (High Priority)
   # ============================================
+  test_hiring_v1:
+    source_type: hiring
+    results_per_page: 5
+    pages: 1
+    daily_cap: 10
+    serp_params:
+      hl: en
+      gl: us
+      num: 5
+    queries:
+      - 'site:boards.greenhouse.io "Software Engineer"'  # Single simple query
+    normalization_strategy: ats_greenhouse  
   
   hiring_greenhouse_v1:
     source_type: hiring

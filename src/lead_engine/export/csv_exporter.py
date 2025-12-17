@@ -10,13 +10,14 @@ import structlog
 logger = structlog.get_logger()
 
 
-def export_mvp_leads(leads: List[dict], output_path: Path):
+def export_mvp_leads(leads: List, output_path: Path, store=None):
     """
     Export MVP leads to CSV.
     
     Args:
-        leads: List of lead dictionaries (from database Lead records)
+        leads: List of Lead SQLAlchemy model objects
         output_path: Output file path
+        store: Optional Store instance to query related data
     """
     if not leads:
         logger.warning("No MVP leads to export")
@@ -43,46 +44,69 @@ def export_mvp_leads(leads: List[dict], output_path: Path):
         writer.writeheader()
         
         for lead in leads:
-            # Extract data from Lead record (assuming SQLAlchemy model)
-            row = {
-                "company_name": getattr(lead, "company_name", "") if hasattr(lead, "company_name") else lead.get("company_name", ""),
-                "company_domain": getattr(lead, "company_domain", "") if hasattr(lead, "company_domain") else lead.get("company_domain", ""),
-                "website_url": "",
-                "primary_source": "",
-                "evidence_url": "",
-                "mvp_intent_score": getattr(lead, "mvp_intent_score", 0) if hasattr(lead, "mvp_intent_score") else lead.get("mvp_intent_score", 0),
-                "roles_detected": "",
-                "signals": "",
-                "score_breakdown_json": "",
-                "recommended_channel": getattr(lead, "recommended_channel", "") if hasattr(lead, "recommended_channel") else lead.get("recommended_channel", ""),
-                "outreach_note": getattr(lead, "outreach_note", "") if hasattr(lead, "outreach_note") else lead.get("outreach_note", ""),
-            }
+            # Extract data from Lead SQLAlchemy model
+            company_domain = lead.company_domain
+            
+            # Get company info
+            company_name = ""
+            website_url = ""
+            if store:
+                company = store.get_company_by_domain(company_domain)
+                if company:
+                    company_name = company.company_name or ""
+                    website_url = company.website_url or ""
+            
+            # Get latest signal snapshot
+            primary_source = ""
+            evidence_url = ""
+            roles_detected = ""
+            signals = ""
+            if store:
+                snapshot = store.get_latest_signal_snapshot(company_domain)
+                if snapshot:
+                    primary_source = snapshot.source_type.value if hasattr(snapshot.source_type, "value") else str(snapshot.source_type)
+                    evidence_url = snapshot.source_url_normalized or ""
+                    signal_details = snapshot.signal_details or {}
+                    roles_detected = json.dumps(signal_details.get("roles_detected", []))
+                    signals = json.dumps(snapshot.signals or [])
             
             # Handle score_breakdown (convert dict to JSON string)
-            score_breakdown = getattr(lead, "score_breakdown", {}) if hasattr(lead, "score_breakdown") else lead.get("score_breakdown", {})
-            if score_breakdown:
-                row["score_breakdown_json"] = json.dumps(score_breakdown)
+            score_breakdown_json = ""
+            if lead.score_breakdown:
+                score_breakdown_json = json.dumps(lead.score_breakdown)
             
-            # Get company info if available
-            if hasattr(lead, "company") and lead.company:
-                row["company_name"] = lead.company.company_name or row["company_name"]
-                row["website_url"] = lead.company.website_url or ""
+            # Handle recommended_channel (enum to string)
+            recommended_channel = ""
+            if lead.recommended_channel:
+                recommended_channel = lead.recommended_channel.value if hasattr(lead.recommended_channel, "value") else str(lead.recommended_channel)
             
-            # Get signal snapshot if available
-            # (This would need to be joined/loaded separately)
+            row = {
+                "company_name": company_name,
+                "company_domain": company_domain,
+                "website_url": website_url,
+                "primary_source": primary_source,
+                "evidence_url": evidence_url,
+                "mvp_intent_score": lead.mvp_intent_score or 0,
+                "roles_detected": roles_detected,
+                "signals": signals,
+                "score_breakdown_json": score_breakdown_json,
+                "recommended_channel": recommended_channel,
+                "outreach_note": lead.outreach_note or "",
+            }
             
             writer.writerow(row)
     
     logger.info("Exported MVP leads", count=len(leads), path=str(output_path))
 
 
-def export_partnership_targets(leads: List[dict], output_path: Path):
+def export_partnership_targets(leads: List, output_path: Path, store=None):
     """
     Export partnership targets to CSV.
     
     Args:
-        leads: List of lead dictionaries (from database Lead records)
+        leads: List of Lead SQLAlchemy model objects
         output_path: Output file path
+        store: Optional Store instance to query related data
     """
     if not leads:
         logger.warning("No partnership targets to export")
@@ -106,27 +130,41 @@ def export_partnership_targets(leads: List[dict], output_path: Path):
         writer.writeheader()
         
         for lead in leads:
-            row = {
-                "company_name": getattr(lead, "company_name", "") if hasattr(lead, "company_name") else lead.get("company_name", ""),
-                "company_domain": getattr(lead, "company_domain", "") if hasattr(lead, "company_domain") else lead.get("company_domain", ""),
-                "website_url": "",
-                "business_type": "",
-                "partnership_fit_score": getattr(lead, "partnership_fit_score", 0) if hasattr(lead, "partnership_fit_score") else lead.get("partnership_fit_score", 0),
-                "signals": "",
-                "score_breakdown_json": "",
-                "suggested_partnership_angle": getattr(lead, "outreach_note", "") if hasattr(lead, "outreach_note") else lead.get("outreach_note", ""),
-            }
+            company_domain = lead.company_domain
+            
+            # Get company info
+            company_name = ""
+            website_url = ""
+            business_type = ""
+            if store:
+                company = store.get_company_by_domain(company_domain)
+                if company:
+                    company_name = company.company_name or ""
+                    website_url = company.website_url or ""
+                    business_type = company.business_type.value if hasattr(company.business_type, "value") else str(company.business_type)
+            
+            # Get latest signal snapshot
+            signals = ""
+            if store:
+                snapshot = store.get_latest_signal_snapshot(company_domain)
+                if snapshot:
+                    signals = json.dumps(snapshot.signals or [])
             
             # Handle score_breakdown
-            score_breakdown = getattr(lead, "score_breakdown", {}) if hasattr(lead, "score_breakdown") else lead.get("score_breakdown", {})
-            if score_breakdown:
-                row["score_breakdown_json"] = json.dumps(score_breakdown)
+            score_breakdown_json = ""
+            if lead.score_breakdown:
+                score_breakdown_json = json.dumps(lead.score_breakdown)
             
-            # Get company info if available
-            if hasattr(lead, "company") and lead.company:
-                row["company_name"] = lead.company.company_name or row["company_name"]
-                row["website_url"] = lead.company.website_url or ""
-                row["business_type"] = lead.company.business_type.value if hasattr(lead.company.business_type, "value") else str(lead.company.business_type)
+            row = {
+                "company_name": company_name,
+                "company_domain": company_domain,
+                "website_url": website_url,
+                "business_type": business_type,
+                "partnership_fit_score": lead.partnership_fit_score or 0,
+                "signals": signals,
+                "score_breakdown_json": score_breakdown_json,
+                "suggested_partnership_angle": lead.outreach_note or "",
+            }
             
             writer.writerow(row)
     

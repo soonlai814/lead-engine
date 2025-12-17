@@ -117,6 +117,10 @@ Build a working pipeline that discovers companies via ATS boards, classifies the
   - ✅ Extract company website URL (best effort)
 - ✅ Implement `crawl/parsers/ats_lever.py`
 - ✅ Implement `crawl/parsers/ats_ashby.py`
+- ✅ Implement `crawl/parsers/ats_workable.py`
+- ✅ Implement `crawl/parsers/ats_smartrecruiters.py`
+- ✅ Implement `crawl/parsers/ats_teamtailor.py`
+- ✅ Implement `crawl/parsers/ats_recruitee.py`
 - ✅ Shared helper functions for role matching
 
 **Dependencies:** 1.4  
@@ -199,7 +203,7 @@ Build a working pipeline that discovers companies via ATS boards, classifies the
 - ✅ Can run `python -m lead_engine run --source hiring`
 - ✅ Discovers ATS boards from SERP
 - ✅ Normalizes URLs correctly
-- ✅ Parses at least 3 ATS types (Greenhouse, Lever, Ashby)
+- ✅ Parses all 7 ATS types (Greenhouse, Lever, Ashby, Workable, SmartRecruiters, Teamtailor, Recruitee)
 - ✅ Classifies companies correctly (rule-based classification implemented)
 - ✅ Generates MVP leads CSV with scores
 - ✅ All metrics logged (SERP calls, targets discovered, etc.)
@@ -213,7 +217,7 @@ All 11 sub-tasks completed. The pipeline now:
 1. Discovers ATS boards via SerpAPI
 2. Normalizes and deduplicates URLs
 3. Fetches and caches pages with rate limiting
-4. Parses job listings from Greenhouse, Lever, and Ashby
+4. Parses job listings from all 7 ATS types (Greenhouse, Lever, Ashby, Workable, SmartRecruiters, Teamtailor, Recruitee)
 5. Resolves company domains
 6. Classifies business types using rule-based keyword matching
 7. Scores leads (MVP intent and partnership fit)

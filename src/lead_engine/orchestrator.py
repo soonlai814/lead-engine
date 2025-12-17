@@ -15,6 +15,10 @@ from .crawl.fetcher import Fetcher
 from .crawl.parsers.ats_ashby import parse_ats_board as parse_ashby
 from .crawl.parsers.ats_greenhouse import parse_ats_board as parse_greenhouse
 from .crawl.parsers.ats_lever import parse_ats_board as parse_lever
+from .crawl.parsers.ats_workable import parse_ats_board as parse_workable
+from .crawl.parsers.ats_smartrecruiters import parse_ats_board as parse_smartrecruiters
+from .crawl.parsers.ats_teamtailor import parse_ats_board as parse_teamtailor
+from .crawl.parsers.ats_recruitee import parse_ats_board as parse_recruitee
 from .export.csv_exporter import export_mvp_leads, export_partnership_targets
 from .normalize.ats_normalizer import normalize_ats_url, is_ats_url
 from .normalize.url_normalizer import normalize_url
@@ -82,6 +86,30 @@ class Orchestrator:
             raise ValueError("DATABASE_URL environment variable not set")
         return database_url
 
+    def run_pack(self, pack_name: str):
+        """Run discovery for a specific query pack."""
+        self.log.info("Running discovery for query pack", pack=pack_name)
+        
+        query_packs = self.query_packs_config.get("query_packs", {})
+        
+        if pack_name not in query_packs:
+            self.log.error("Query pack not found", pack=pack_name, available_packs=list(query_packs.keys()))
+            raise ValueError(f"Query pack '{pack_name}' not found in config")
+        
+        pack_config = query_packs[pack_name]
+        source_type = pack_config.get("source_type")
+        
+        if not source_type:
+            self.log.error("Query pack missing source_type", pack=pack_name)
+            raise ValueError(f"Query pack '{pack_name}' missing source_type")
+        
+        # Process single pack
+        self._process_query_pack(pack_name, pack_config, source_type)
+        
+        # Process discovery targets if not dry-run and source_type is hiring
+        if not self.dry_run and source_type == "hiring":
+            self._process_discovery_targets(source_type)
+
     def run_source(self, source_type: str):
         """Run discovery for a specific source type."""
         self.log.info("Running discovery for source type", source_type=source_type)
@@ -109,102 +137,123 @@ class Orchestrator:
         
         # Process each query pack
         for pack_name, pack_config in source_packs.items():
-            self.log.info("Processing query pack", pack=pack_name)
-            
-            try:
-                # Run SERP discovery
-                queries = pack_config.get("queries", [])
-                pages = pack_config.get("pages", 1)
-                results_per_page = pack_config.get("results_per_page", 10)
-                serp_params = pack_config.get("serp_params", {})
-                
-                for query in queries:
-                    self.log.info("Executing SERP query", pack=pack_name, query=query)
-                    
-                    try:
-                        results = self.serp_provider.search_with_pagination(
-                            query=query,
-                            pages=pages,
-                            results_per_page=results_per_page,
-                            **serp_params
-                        )
-                        
-                        metrics["serp_calls"] += pages
-                        
-                        # Store SERP results and create discovery targets
-                        for result in results:
-                            raw_url = result.get("link", "")
-                            if not raw_url:
-                                continue
-                            
-                            # Normalize URL
-                            normalized_url = None
-                            if is_ats_url(raw_url):
-                                normalized_url = normalize_ats_url(raw_url)
-                            else:
-                                normalized_url = normalize_url(raw_url)
-                            
-                            if not normalized_url:
-                                self.log.warning("Failed to normalize URL", url=raw_url)
-                                continue
-                            
-                            # Extract domain from normalized URL
-                            from urllib.parse import urlparse
-                            parsed = urlparse(normalized_url)
-                            source_domain = parsed.netloc.lower()
-                            
-                            # Create or update discovery target
-                            serp_evidence = {
-                                "title": result.get("title", ""),
-                                "snippet": result.get("snippet", ""),
-                                "rank": result.get("rank", 0),
-                            }
-                            
-                            if not self.dry_run:
-                                # Store SERP result
-                                self.store.save_serp_result({
-                                    "provider": "serpapi",
-                                    "query_pack": pack_name,
-                                    "query": query,
-                                    "rank": result.get("rank", 0),
-                                    "title": result.get("title", ""),
-                                    "snippet": result.get("snippet", ""),
-                                    "link": raw_url,
-                                    "fetched_at": datetime.utcnow(),
-                                })
-                                
-                                # Get or create discovery target
-                                target, is_new = self.store.get_or_create_discovery_target(
-                                    normalized_url=normalized_url,
-                                    source_type=SourceType(source_type),
-                                    source_url_raw=raw_url,
-                                    source_domain=source_domain,
-                                    serp_query_pack=pack_name,
-                                    serp_query=query,
-                                    serp_evidence=serp_evidence,
-                                    first_seen_at=datetime.utcnow(),
-                                    last_seen_at=datetime.utcnow(),
-                                )
-                                
-                                metrics["targets_discovered"] += 1
-                                if is_new:
-                                    metrics["targets_new"] += 1
-                                else:
-                                    metrics["targets_existing"] += 1
-                            
-                    except Exception as e:
-                        self.log.error("Error processing SERP query", pack=pack_name, query=query, error=str(e), exc_info=True)
-                        continue
-                
-            except Exception as e:
-                self.log.error("Error processing query pack", pack=pack_name, error=str(e), exc_info=True)
-                continue
+            pack_metrics = self._process_query_pack(pack_name, pack_config, source_type)
+            # Aggregate metrics
+            for key in metrics:
+                metrics[key] += pack_metrics.get(key, 0)
         
         self.log.info("Discovery completed", source_type=source_type, metrics=metrics)
         
-        # Process discovery targets through pipeline
-        if not self.dry_run and source_type == "hiring":  # Only process hiring for Phase 1
+        # Process discovery targets if not dry-run and source_type is hiring
+        if not self.dry_run and source_type == "hiring":
             self._process_discovery_targets(source_type)
+
+    def _process_query_pack(self, pack_name: str, pack_config: dict, source_type: str) -> dict:
+        """
+        Process a single query pack.
+        
+        Returns:
+            Dictionary with metrics (serp_calls, targets_discovered, etc.)
+        """
+        self.log.info("Processing query pack", pack=pack_name)
+        
+        metrics = {
+            "serp_calls": 0,
+            "targets_discovered": 0,
+            "targets_new": 0,
+            "targets_existing": 0,
+        }
+        
+        try:
+            # Run SERP discovery
+            queries = pack_config.get("queries", [])
+            pages = pack_config.get("pages", 1)
+            results_per_page = pack_config.get("results_per_page", 10)
+            serp_params = pack_config.get("serp_params", {})
+            
+            for query in queries:
+                self.log.info("Executing SERP query", pack=pack_name, query=query)
+                
+                try:
+                    results = self.serp_provider.search_with_pagination(
+                        query=query,
+                        pages=pages,
+                        results_per_page=results_per_page,
+                        **serp_params
+                    )
+                    
+                    metrics["serp_calls"] += pages
+                    
+                    # Store SERP results and create discovery targets
+                    for result in results:
+                        raw_url = result.get("link", "")
+                        if not raw_url:
+                            continue
+                        
+                        # Normalize URL
+                        normalized_url = None
+                        if is_ats_url(raw_url):
+                            normalized_url = normalize_ats_url(raw_url)
+                        else:
+                            normalized_url = normalize_url(raw_url)
+                        
+                        if not normalized_url:
+                            self.log.warning("Failed to normalize URL", url=raw_url)
+                            continue
+                        
+                        # Extract domain from normalized URL
+                        from urllib.parse import urlparse
+                        parsed = urlparse(normalized_url)
+                        source_domain = parsed.netloc.lower()
+                        
+                        # Create or update discovery target
+                        serp_evidence = {
+                            "title": result.get("title", ""),
+                            "snippet": result.get("snippet", ""),
+                            "rank": result.get("rank", 0),
+                        }
+                        
+                        if not self.dry_run:
+                            # Store SERP result
+                            self.store.save_serp_result({
+                                "provider": "serpapi",
+                                "query_pack": pack_name,
+                                "query": query,
+                                "rank": result.get("rank", 0),
+                                "title": result.get("title", ""),
+                                "snippet": result.get("snippet", ""),
+                                "link": raw_url,
+                                "fetched_at": datetime.utcnow(),
+                            })
+                            
+                            # Get or create discovery target
+                            target, is_new = self.store.get_or_create_discovery_target(
+                                normalized_url=normalized_url,
+                                source_type=SourceType(source_type),
+                                source_url_raw=raw_url,
+                                source_domain=source_domain,
+                                serp_query_pack=pack_name,
+                                serp_query=query,
+                                serp_evidence=serp_evidence,
+                                first_seen_at=datetime.utcnow(),
+                                last_seen_at=datetime.utcnow(),
+                            )
+                            
+                            metrics["targets_discovered"] += 1
+                            if is_new:
+                                metrics["targets_new"] += 1
+                            else:
+                                metrics["targets_existing"] += 1
+                        
+                except Exception as e:
+                    self.log.error("Error processing SERP query", pack=pack_name, query=query, error=str(e), exc_info=True)
+                    continue
+            
+        except Exception as e:
+            self.log.error("Error processing query pack", pack=pack_name, error=str(e), exc_info=True)
+        
+        self.log.info("Query pack completed", pack=pack_name, metrics=metrics)
+        return metrics
 
     def _process_discovery_targets(self, source_type: str):
         """Process discovery targets through full pipeline: fetch, parse, classify, score, route."""
@@ -246,6 +295,14 @@ class Orchestrator:
                         parsed = parse_lever(target.source_url_normalized, html, self.keywords)
                     elif "ashbyhq.com" in target.source_url_normalized:
                         parsed = parse_ashby(target.source_url_normalized, html, self.keywords)
+                    elif "workable.com" in target.source_url_normalized:
+                        parsed = parse_workable(target.source_url_normalized, html, self.keywords)
+                    elif "smartrecruiters.com" in target.source_url_normalized:
+                        parsed = parse_smartrecruiters(target.source_url_normalized, html, self.keywords)
+                    elif "teamtailor.com" in target.source_url_normalized:
+                        parsed = parse_teamtailor(target.source_url_normalized, html, self.keywords)
+                    elif "recruitee.com" in target.source_url_normalized:
+                        parsed = parse_recruitee(target.source_url_normalized, html, self.keywords)
                 
                 if not parsed:
                     continue
@@ -375,7 +432,7 @@ class Orchestrator:
         mvp_path = output_dir / mvp_filename
         
         if mvp_leads:
-            export_mvp_leads(mvp_leads, mvp_path)
+            export_mvp_leads(mvp_leads, mvp_path, store=self.store)
             self.log.info("Exported MVP leads", count=len(mvp_leads), path=str(mvp_path))
         else:
             self.log.info("No MVP leads to export")
@@ -386,7 +443,7 @@ class Orchestrator:
         partnership_path = output_dir / partnership_filename
         
         if partnership_leads:
-            export_partnership_targets(partnership_leads, partnership_path)
+            export_partnership_targets(partnership_leads, partnership_path, store=self.store)
             self.log.info("Exported partnership targets", count=len(partnership_leads), path=str(partnership_path))
         else:
             self.log.info("No partnership targets to export")
