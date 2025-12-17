@@ -1,57 +1,72 @@
 # Scoring Weights and Thresholds
+# Updated to match requirements.md Appendix C (0-100 scale)
 
 # ============================================
-# MVP Intent Score Weights
+# C1) MVP Intent Score (0-100 scale)
 # ============================================
 mvp_intent_weights:
-  # Hiring signals
-  ats_board_exists: 3
-  engineering_roles_count_3plus: 3
-  engineering_roles_count_1plus: 2
-  role_tags_backend_fullstack_devops_ml: 2
+  # Hiring (weight dominant)
+  ats_board_exists: 20
+  engineering_roles_count:
+    1_2: 8
+    3_5: 15
+    6_10: 20
+    11_plus: 12  # cap to avoid enterprise; often noisy
+  founding_0to1_language: 12
+  role_tags_backend_fullstack_devops_ml: 8
+  product_engineer_generalist: 6
   
-  # Product indicators
-  pricing_page_detected: 2
-  docs_api_detected: 2
+  # Product signals (quality filter)
+  pricing_page_detected: 8
+  docs_api_detected: 8
+  integrations_status_page_detected: 4
   
-  # Recency signals
-  recent_launch_0_30d: 3
-  recent_launch_31_90d: 1
-  
-  # Funding/accelerator
-  accelerator_member: 2
-  recent_funding: 2
-  
-  # Ecosystem
-  ecosystem_listed: 1
+  # Recency multipliers (secondary)
+  recent_launch_0_30d: 10
+  recent_launch_31_90d: 4
+  preseed_seed_funding_12mo: 10
+  series_a_18mo: 8
+  accelerator_member: 8
+  ecosystem_listed_grant_hackathon: 4
 
-# MVP Intent Penalties
+# MVP Intent Penalties (hard filters)
 mvp_intent_penalties:
-  services_classification: -8
-  staffing_classification: -10
+  services_agency_consultancy: -25  # route to partnership lane instead
+  staffing_recruiter: -40  # ignore
+  enterprise_noise_detected: -10
+  huge_hiring_indicators: -10
 
-# MVP Intent Thresholds
+# MVP Intent Thresholds (runway-focused)
 mvp_intent_thresholds:
-  prioritize: 8
-  normal: 5
-  hold_ignore: 5  # < 5
+  a_tier: 65  # >= 65: personalized outreach now
+  b_tier: 50  # 50-64: semi-templated outreach
+  hold_ignore: 50  # < 50: hold/nurture (or ignore if low quality)
 
 # ============================================
-# Partnership Fit Score Weights
+# C2) Partnership Fit Score (0-100 scale)
 # ============================================
 partnership_fit_weights:
-  services_type_confirmed: 2
-  offers_mvp_dev: 2
-  hiring_devs: 2
-  niche_match_ai_web3_saas: 2
-  case_studies_present: 1
-  strong_region: 1
+  # Base
+  business_type_services_consultancy_integrator: 20
+  
+  # Signals of good partner
+  mentions_product_studio_mvp_dev: 10
+  mentions_white_label_overflow_referral: 15
+  hiring_engineers_capacity_pressure: 10
+  niche_alignment_ai_web3_saas_dev_tooling: 10
+  strong_portfolio_case_studies: 6
+  clear_inbound_channel_newsletter_community: 6
+
+# Partnership Fit Penalties
+partnership_fit_penalties:
+  staffing_recruiter_language: -30  # not a partner; ignore by default
+  extremely_broad_we_do_everything_agency: -10
 
 # Partnership Fit Thresholds
 partnership_fit_thresholds:
-  high: 6
-  medium: 4
-  low: 2
+  outreach: 60  # >= 60: partnership outreach
+  monitor: 45  # 45-59: monitor
+  ignore: 45  # < 45: ignore
 
 # ============================================
 # Classification Thresholds
@@ -88,3 +103,15 @@ routing:
   # Strong hiring threshold (for unknown routing)
   strong_hiring_threshold: 3  # engineering_roles_count
 
+# ============================================
+# Common Concepts (C0)
+# ============================================
+common_concepts:
+  # Stage boost: applied when early-stage keywords present
+  stage_boost_enabled: true
+  
+  # Enterprise penalty: applied when enterprise noise present
+  enterprise_penalty_enabled: true
+  
+  # Hiring intensity: derived from job count and engineering share
+  hiring_intensity_enabled: true

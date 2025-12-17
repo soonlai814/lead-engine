@@ -1,7 +1,38 @@
 # Keyword Taxonomies for Classification and Parsing
+# Updated to match requirements.md Appendix B
 
 # ============================================
-# ATS Role Taxonomy Keywords
+# B0) Stage & Intent Keywords (new)
+# ============================================
+stage_keywords:
+  stage_early:
+    - founding
+    - founder
+    - early-stage
+    - seed
+    - pre-seed
+    - startup
+    - small team
+    - lean team
+  
+  stage_build:
+    - 0 to 1
+    - 0-1
+    - greenfield
+    - MVP
+    - beta
+    - v1
+    - shipping
+    - launch
+  
+  urgency:
+    - urgent
+    - asap
+    - immediately
+    - high priority
+
+# ============================================
+# B1) ATS Role Taxonomy Keywords (expanded)
 # ============================================
 role_keywords:
   backend:
@@ -10,63 +41,76 @@ role_keywords:
     - api
     - server
     - platform
+    - distributed systems
+    - microservices
     - server-side
   
   frontend:
     - frontend
     - front-end
     - react
-    - vue
-    - angular
+    - next.js
     - web
     - ui
-    - ux
+    - typescript
+    - vue
+    - angular
   
   fullstack:
     - full stack
     - fullstack
     - full-stack
+    - product engineer
+    - engineering generalist
   
   devops:
     - devops
     - dev ops
     - sre
-    - site reliability
     - infrastructure
     - kubernetes
-    - k8s
     - terraform
+    - observability
+    - site reliability
+    - k8s
     - cloud engineer
   
   ml_ai:
     - machine learning
+    - ml
     - ml engineer
     - ai engineer
     - llm
     - genai
     - generative ai
+    - rag
+    - agents
+    - prompt
     - nlp
     - computer vision
   
   data:
     - data engineer
+    - analytics
     - analytics engineer
     - pipeline
     - etl
+    - warehouse
   
   web3:
     - solidity
     - blockchain
     - web3
     - smart contract
-    - crypto
     - defi
+    - evm
+    - crypto
 
 # ============================================
-# Product Indicators (for classification)
+# B2) Product Indicators (keep + tighten)
 # ============================================
 product_indicators:
-  strong:
+  strong_product:
     - pricing
     - docs
     - documentation
@@ -76,26 +120,31 @@ product_indicators:
     - status page
     - api documentation
   
-  moderate:
-    - customers
+  sales_motion:
+    - book a demo
+    - talk to sales
+    - request a demo
     - case studies
+    - customers
     - testimonials
     - features
     - product tour
 
 # ============================================
-# Services/Agency Indicators
+# B3) Services/Agency Indicators (route to partnership, not delete)
 # ============================================
 services_indicators:
   strong:
     - agency
     - consulting
+    - product studio
     - software house
     - outsourcing
     - we help clients
     - our services
     - development services
     - custom solutions
+    - implementation partner
     - client projects
   
   moderate:
@@ -105,22 +154,56 @@ services_indicators:
     - development team
 
 # ============================================
-# Staffing/Recruiter Indicators
+# B4) Staffing/Recruiter Indicators (ignore by default)
 # ============================================
 staffing_indicators:
   strong:
     - staffing
     - recruiting
     - talent
-    - hire developers
     - placement
     - headhunting
+    - hire developers
     - recruitment agency
+    - body shop
   
   moderate:
     - talent acquisition
     - hiring solutions
     - talent pool
+
+# ============================================
+# B5) Enterprise / Low-Fit Indicators (new penalties)
+# ============================================
+enterprise_indicators:
+  enterprise_noise:
+    - enterprise
+    - fortune
+    - global leader
+    - bank
+    - government
+    - university
+    - public sector
+    - conglomerate
+  
+  huge_hiring:
+    - 100+ openings
+    - our 10,000 employees
+    - worldwide offices
+
+# ============================================
+# B6) Partnership Fit Indicators (new)
+# ============================================
+partnership_indicators:
+  partner_fit:
+    - white label
+    - referral
+    - overflow
+    - capacity
+    - delivery partner
+    - technical partner
+    - implementation partner
+    - co-delivery
 
 # ============================================
 # Negative Keywords (exclude from leads)
@@ -142,10 +225,12 @@ outreach_templates:
   hiring_engineering:
     - "Noticed you're hiring {roles} roles — execution bandwidth is usually tight at this stage. Happy to help speed things up."
     - "Saw your {roles} openings — would love to share how we've helped similar teams ship faster."
+    - "Saw you're hiring a founding/full-stack role — teams at this stage usually hit execution bottlenecks. I can ship production MVP increments fast (CTO + delivery)."
   
   recent_launch:
     - "Saw your recent launch — happy to share a quick teardown to speed up iteration."
     - "Congrats on the launch! Would love to help you iterate faster on {product_name}."
+    - "Congrats on the v1 launch — happy to share a quick teardown + 3 quick wins to speed up the next 2 weeks of shipping."
   
   accelerator:
     - "Noticed you're part of {accelerator} — congrats! Happy to help with execution bandwidth."
@@ -153,4 +238,4 @@ outreach_templates:
   partnership:
     - "Looks like you ship MVPs for clients — open to a partnership for overflow engineering + AI/Web3 builds?"
     - "Noticed your agency focuses on {niche} — would love to explore a partnership for technical execution."
-
+    - "Looks like you ship MVPs for clients. Open to a co-delivery partnership? I handle complex backend/AI agents while you run design/PM — fast, clean, and white-label friendly."

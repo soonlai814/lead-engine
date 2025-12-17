@@ -220,10 +220,15 @@ All 11 sub-tasks completed. The pipeline now:
 4. Parses job listings from all 7 ATS types (Greenhouse, Lever, Ashby, Workable, SmartRecruiters, Teamtailor, Recruitee)
 5. Resolves company domains
 6. Classifies business types using rule-based keyword matching
-7. Scores leads (MVP intent and partnership fit)
-8. Routes leads to appropriate pipelines
+7. Scores leads (MVP intent 0-100 and partnership fit 0-100 scales)
+8. Routes leads to appropriate pipelines (MVP client or partnership)
 9. Generates outreach notes
 10. Exports ranked CSV files
+
+**Configuration Updated (Current Session):**
+- Query packs updated to match requirements.md Appendix A (comprehensive queries with stage modifiers, partnership discovery packs)
+- Keywords updated to match Appendix B (stage keywords, enterprise indicators, partnership fit indicators)
+- Scoring updated to 0-100 scale per Appendix C (detailed weights and thresholds)
 
 **Ready for testing and Phase 2 development.**
 
@@ -237,9 +242,10 @@ Add launch discovery and parsing to enrich lead signals.
 ### Tasks
 
 #### 2.1 Launch SERP Queries
-- [ ] Add launch query packs to `config/query_packs.yaml`
-  - Show HN queries
-  - Generic launch queries
+- ✅ Launch query packs already added to `config/query_packs.yaml` (updated per requirements.md Appendix A)
+  - ✅ `launch_showhn_recent_v2` - Show HN queries
+  - ✅ `launch_shipping_cadence_v2` - Shipping/launch cadence queries
+  - ✅ `launch_producthunt_makers_v2` - ProductHunt queries (optional)
 - [ ] Test SERP discovery for launch source type
 
 **Dependencies:** Phase 1.1  
@@ -283,9 +289,10 @@ Add funding and accelerator discovery to boost lead scores.
 ### Tasks
 
 #### 3.1 Funding SERP Queries
-- [ ] Add funding query packs
-  - Accelerator directory queries
-  - Funding round announcement queries
+- ✅ Funding query packs already added to `config/query_packs.yaml` (updated per requirements.md Appendix A)
+  - ✅ `funding_seed_preseed_v2` - Seed/pre-seed funding queries
+  - ✅ `accelerator_cohorts_v2` - Accelerator directory queries
+  - ✅ `funding_seriesA_filter_v2` - Series A queries (optional)
 - [ ] Test SERP discovery
 
 **Dependencies:** Phase 1.1  
@@ -329,9 +336,10 @@ Add ecosystem/community discovery (Web3, AI builders, etc.).
 ### Tasks
 
 #### 4.1 Ecosystem SERP Queries
-- [ ] Add ecosystem query packs
-  - Web3 ecosystem directories
-  - AI builder programs
+- ✅ Ecosystem query packs already added to `config/query_packs.yaml` (updated per requirements.md Appendix A)
+  - ✅ `ecosystem_web3_directories_v2` - Web3 ecosystem directories
+  - ✅ `ecosystem_grants_hackathons_v2` - Grants and hackathons
+  - ✅ `ecosystem_ai_builders_v2` - AI builder programs
 - [ ] Test SERP discovery
 
 **Dependencies:** Phase 1.1  

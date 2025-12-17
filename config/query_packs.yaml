@@ -1,9 +1,10 @@
 # SERP Query Packs Configuration
 # Each pack defines queries to run, SERP parameters, and execution rules
+# Updated to match requirements.md Appendix A
 
 query_packs:
   # ============================================
-  # Hiring — ATS Packs (High Priority)
+  # Test Pack (for development)
   # ============================================
   test_hiring_v1:
     source_type: hiring
@@ -15,26 +16,14 @@ query_packs:
       gl: us
       num: 5
     queries:
-      - 'site:boards.greenhouse.io "Software Engineer"'  # Single simple query
-    normalization_strategy: ats_greenhouse  
-  
-  hiring_greenhouse_v1:
-    source_type: hiring
-    results_per_page: 10
-    pages: 3
-    daily_cap: 100
-    serp_params:
-      hl: en
-      gl: us
-      num: 10
-    queries:
-      - 'site:boards.greenhouse.io ("Backend Engineer" OR "Full Stack" OR "Software Engineer")'
-      - 'site:boards.greenhouse.io ("AI Engineer" OR "Machine Learning" OR "Data Engineer")'
-      - 'site:boards.greenhouse.io ("DevOps" OR "Platform Engineer" OR "SRE")'
-      - 'site:boards.greenhouse.io ("Solidity" OR "Blockchain" OR "Web3")'
+      - 'site:boards.greenhouse.io "Software Engineer"'
     normalization_strategy: ats_greenhouse
 
-  hiring_lever_v1:
+  # ============================================
+  # A1) Hiring — ATS Packs (High Priority, Early-Stage Biased)
+  # ============================================
+  
+  hiring_greenhouse_stage_v2:
     source_type: hiring
     results_per_page: 10
     pages: 3
@@ -44,13 +33,32 @@ query_packs:
       gl: us
       num: 10
     queries:
-      - 'site:jobs.lever.co ("Backend" OR "Full Stack" OR "Software Engineer")'
-      - 'site:jobs.lever.co ("AI Engineer" OR "ML Engineer" OR "Data Engineer")'
-      - 'site:jobs.lever.co ("DevOps" OR "Platform")'
-      - 'site:jobs.lever.co ("Blockchain" OR "Solidity" OR "Web3")'
+      - 'site:boards.greenhouse.io ("Founding Engineer" OR "Founding Software Engineer" OR "Founding Full Stack")'
+      - 'site:boards.greenhouse.io ("Full Stack" OR "Full-Stack" OR "Backend Engineer") ("startup" OR "early-stage" OR "seed" OR "pre-seed")'
+      - 'site:boards.greenhouse.io ("Platform Engineer" OR "DevOps" OR "SRE") ("startup" OR "seed")'
+      - 'site:boards.greenhouse.io ("Machine Learning" OR "AI Engineer" OR "LLM" OR "GenAI") ("startup" OR "seed" OR "early-stage")'
+      - 'site:boards.greenhouse.io ("Product Engineer" OR "Engineering Generalist") ("startup" OR "early-stage")'
+      - 'site:boards.greenhouse.io ("Solidity" OR "Blockchain" OR "Web3") ("startup" OR "seed")'
+    normalization_strategy: ats_greenhouse
+
+  hiring_lever_stage_v2:
+    source_type: hiring
+    results_per_page: 10
+    pages: 3
+    daily_cap: 100
+    serp_params:
+      hl: en
+      gl: us
+      num: 10
+    queries:
+      - 'site:jobs.lever.co ("Founding Engineer" OR "Founding Full Stack" OR "Founding Backend")'
+      - 'site:jobs.lever.co ("Full Stack" OR "Backend") ("startup" OR "seed" OR "early-stage")'
+      - 'site:jobs.lever.co ("Platform" OR "DevOps" OR "SRE") ("startup" OR "seed")'
+      - 'site:jobs.lever.co ("AI Engineer" OR "ML Engineer" OR "LLM" OR "GenAI") ("startup" OR "seed")'
+      - 'site:jobs.lever.co ("Solidity" OR "Blockchain" OR "Web3") ("startup" OR "seed")'
     normalization_strategy: ats_lever
 
-  hiring_ashby_v1:
+  hiring_ashby_stage_v2:
     source_type: hiring
     results_per_page: 10
     pages: 2
@@ -60,11 +68,13 @@ query_packs:
       gl: us
       num: 10
     queries:
-      - 'site:jobs.ashbyhq.com ("Software Engineer" OR "Backend" OR "Full Stack")'
-      - 'site:jobs.ashbyhq.com ("AI" OR "Machine Learning" OR "Data Engineer")'
+      - 'site:jobs.ashbyhq.com ("Founding" OR "0 to 1" OR "0-1") ("Engineer" OR "Full Stack" OR "Backend")'
+      - 'site:jobs.ashbyhq.com ("Full Stack" OR "Backend" OR "Product Engineer") ("startup" OR "seed" OR "early-stage")'
+      - 'site:jobs.ashbyhq.com ("AI Engineer" OR "Machine Learning" OR "LLM" OR "GenAI") ("startup" OR "seed")'
+      - 'site:jobs.ashbyhq.com ("Platform" OR "DevOps" OR "SRE") ("startup" OR "seed")'
     normalization_strategy: ats_ashby
 
-  hiring_workable_v1:
+  hiring_workable_stage_v2:
     source_type: hiring
     results_per_page: 10
     pages: 2
@@ -74,14 +84,105 @@ query_packs:
       gl: us
       num: 10
     queries:
-      - 'site:apply.workable.com ("Software Engineer" OR "Backend" OR "Full Stack")'
+      - 'site:apply.workable.com ("Founding Engineer" OR "Full Stack" OR "Backend") ("startup" OR "seed" OR "early-stage")'
+      - 'site:apply.workable.com ("AI Engineer" OR "Machine Learning" OR "LLM") ("startup" OR "seed")'
     normalization_strategy: ats_workable
 
+  hiring_teamtailor_stage_v2:
+    source_type: hiring
+    results_per_page: 10
+    pages: 2
+    daily_cap: 50
+    serp_params:
+      hl: en
+      gl: us
+      num: 10
+    queries:
+      - 'site:teamtailor.com ("Founding Engineer" OR "Full Stack" OR "Backend") ("startup" OR "seed" OR "early-stage")'
+      - 'site:teamtailor.com ("AI Engineer" OR "Machine Learning" OR "LLM") ("startup" OR "seed")'
+      - 'site:teamtailor.com ("DevOps" OR "Platform" OR "SRE") ("startup" OR "seed")'
+    normalization_strategy: ats_teamtailor
+
+  hiring_recruitee_stage_v2:
+    source_type: hiring
+    results_per_page: 10
+    pages: 2
+    daily_cap: 50
+    serp_params:
+      hl: en
+      gl: us
+      num: 10
+    queries:
+      - 'site:recruitee.com ("Founding" OR "Full Stack" OR "Backend") ("startup" OR "seed" OR "early-stage")'
+      - 'site:recruitee.com ("AI Engineer" OR "Machine Learning" OR "LLM") ("startup" OR "seed")'
+    normalization_strategy: ats_recruitee
+
+  hiring_smartrecruiters_stage_v2:
+    source_type: hiring
+    results_per_page: 10
+    pages: 2
+    daily_cap: 30
+    serp_params:
+      hl: en
+      gl: us
+      num: 10
+    queries:
+      - 'site:careers.smartrecruiters.com ("Full Stack" OR "Backend") ("startup" OR "seed" OR "early-stage")'
+      - 'site:careers.smartrecruiters.com ("AI Engineer" OR "Machine Learning") ("startup" OR "seed")'
+    normalization_strategy: ats_smartrecruiters
+
   # ============================================
-  # Launch Packs
+  # A1P) Partnership Discovery (Agencies / Consultancies / Integrators)
   # ============================================
   
-  launch_showhn_v1:
+  partner_agency_services_v1:
+    source_type: hiring
+    results_per_page: 10
+    pages: 2
+    daily_cap: 30
+    serp_params:
+      hl: en
+      gl: us
+      num: 10
+    queries:
+      - '("software development agency" OR "product studio" OR "MVP development") ("looking for partners" OR "white label" OR "overflow")'
+      - '("digital agency" OR "branding agency") ("need a dev partner" OR "engineering partner" OR "technical partner")'
+      - '("fractional CTO" OR "CTO as a service") ("partner" OR "collaboration" OR "referral")'
+    normalization_strategy: generic
+
+  partner_agency_hiring_pressure_v1:
+    source_type: hiring
+    results_per_page: 10
+    pages: 2
+    daily_cap: 30
+    serp_params:
+      hl: en
+      gl: us
+      num: 10
+    queries:
+      - '("agency" OR "studio" OR "consulting") ("hiring" OR "we are hiring") ("full stack" OR "backend" OR "AI engineer")'
+      - '("product studio" OR "software agency") ("DevOps" OR "platform engineer")'
+    normalization_strategy: generic
+
+  partner_system_integrator_v1:
+    source_type: hiring
+    results_per_page: 10
+    pages: 2
+    daily_cap: 30
+    serp_params:
+      hl: en
+      gl: us
+      num: 10
+    queries:
+      - '("system integrator" OR "implementation partner") ("SaaS" OR "AI" OR "automation")'
+      - '("HubSpot partner" OR "Salesforce partner") ("engineering" OR "custom integration")'
+    normalization_strategy: generic
+
+  # ============================================
+  # A2) Launch Packs (Secondary Discovery + Messaging Hooks)
+  # ============================================
+  
+  launch_showhn_recent_v2:
     source_type: launch
     results_per_page: 10
     pages: 2
@@ -91,11 +192,11 @@ query_packs:
       gl: us
       num: 10
     queries:
-      - '"Show HN" "launched" "we built"'
-      - '"Show HN" ("MVP" OR "beta" OR "launch") ("AI" OR "SaaS" OR "developer tool")'
+      - '"Show HN" ("launched" OR "built" OR "released") ("MVP" OR "beta" OR "v1")'
+      - '"Show HN" ("we built" OR "we made") ("AI" OR "agent" OR "automation" OR "developer tool")'
     normalization_strategy: generic
 
-  launch_generic_v1:
+  launch_shipping_cadence_v2:
     source_type: launch
     results_per_page: 10
     pages: 2
@@ -105,15 +206,30 @@ query_packs:
       gl: us
       num: 10
     queries:
-      - '("just launched" OR "now live" OR "we launched") ("AI tool" OR "SaaS")'
-      - '("shipping" OR "launching") ("MVP" OR "beta") ("startup")'
+      - '("now live" OR "just launched" OR "released v1" OR "shipping") ("AI" OR "SaaS" OR "automation")'
+      - '("changelog" OR "release notes") ("v1" OR "v0.1") ("SaaS" OR "platform")'
+      - '("public beta" OR "beta launch") ("AI" OR "SaaS")'
+    normalization_strategy: generic
+
+  launch_producthunt_makers_v2:
+    source_type: launch
+    results_per_page: 10
+    pages: 2
+    daily_cap: 30
+    serp_params:
+      hl: en
+      gl: us
+      num: 10
+    queries:
+      - 'site:producthunt.com ("AI" OR "productivity" OR "developer tool") ("today" OR "featured")'
+      - 'site:producthunt.com ("makers" OR "maker") ("launched" OR "shipping")'
     normalization_strategy: generic
 
   # ============================================
-  # Funding / Accelerator Packs
+  # A3) Funding / Accelerator Packs (Enrichment + Priority Boost)
   # ============================================
   
-  funding_accelerator_v1:
+  funding_seed_preseed_v2:
     source_type: funding
     results_per_page: 10
     pages: 2
@@ -123,12 +239,12 @@ query_packs:
       gl: us
       num: 10
     queries:
-      - '("Y Combinator" OR "YC") "W" "companies"'
-      - '"Techstars" "class of" "companies"'
-      - '"accelerator" "demo day" "companies"'
+      - '("raised" OR "secures" OR "announces") ("pre-seed" OR "seed") ("AI" OR "SaaS" OR "platform")'
+      - '("led by") ("seed round" OR "pre-seed") ("startup") ("SaaS" OR "platform")'
+      - '("closing" OR "closed") ("seed round" OR "pre-seed") ("startup")'
     normalization_strategy: generic
 
-  funding_rounds_v1:
+  accelerator_cohorts_v2:
     source_type: funding
     results_per_page: 10
     pages: 2
@@ -138,15 +254,29 @@ query_packs:
       gl: us
       num: 10
     queries:
-      - '("raised" OR "secures") ("seed" OR "pre-seed" OR "Series A") "startup"'
-      - '"led by" "seed round" "startup" ("platform" OR "SaaS")'
+      - 'site:ycombinator.com/companies ("AI" OR "B2B" OR "fintech")'
+      - '("Techstars" OR "500 Global" OR "Antler") ("cohort" OR "batch" OR "demo day") "companies"'
+      - '("accelerator" OR "incubator") ("demo day" OR "batch") ("AI" OR "SaaS") "companies"'
+    normalization_strategy: generic
+
+  funding_seriesA_filter_v2:
+    source_type: funding
+    results_per_page: 10
+    pages: 2
+    daily_cap: 20
+    serp_params:
+      hl: en
+      gl: us
+      num: 10
+    queries:
+      - '("raised" OR "announces") ("Series A") ("B2B" OR "SaaS" OR "AI") "startup"'
     normalization_strategy: generic
 
   # ============================================
-  # Ecosystem / Community Packs
+  # A4) Ecosystem / Community Packs (Pipeline + Niche)
   # ============================================
   
-  ecosystem_web3_v1:
+  ecosystem_web3_directories_v2:
     source_type: ecosystem
     results_per_page: 10
     pages: 2
@@ -156,12 +286,13 @@ query_packs:
       gl: us
       num: 10
     queries:
-      - '"Base ecosystem" "directory" "projects"'
-      - '"Solana" "hackathon winners" "projects"'
-      - '"Polygon grants" "recipients"'
+      - '"Base ecosystem" ("directory" OR "projects" OR "companies")'
+      - '"Solana ecosystem" ("directory" OR "projects")'
+      - '"Polygon ecosystem" ("directory" OR "projects")'
+      - '"Ethereum" "hackathon winners" "projects"'
     normalization_strategy: generic
 
-  ecosystem_ai_builders_v1:
+  ecosystem_grants_hackathons_v2:
     source_type: ecosystem
     results_per_page: 10
     pages: 2
@@ -171,7 +302,21 @@ query_packs:
       gl: us
       num: 10
     queries:
-      - '"AI builder program" "cohort" "startups"'
-      - 'site:notion.site ("ecosystem" OR "builders") ("AI" OR "agents")'
+      - '("grants" OR "grant program") "recipients" ("Base" OR "Solana" OR "Polygon")'
+      - '("hackathon" OR "demo day") ("winners" OR "finalists") ("AI" OR "agent" OR "web3")'
     normalization_strategy: generic
 
+  ecosystem_ai_builders_v2:
+    source_type: ecosystem
+    results_per_page: 10
+    pages: 2
+    daily_cap: 30
+    serp_params:
+      hl: en
+      gl: us
+      num: 10
+    queries:
+      - '"AI builder program" ("cohort" OR "batch") ("startups" OR "companies")'
+      - '("AI agents" OR "agentic") ("community" OR "builders") ("directory" OR "list")'
+      - 'site:notion.site ("builders" OR "ecosystem") ("AI" OR "agents")'
+    normalization_strategy: generic

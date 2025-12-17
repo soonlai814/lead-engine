@@ -15,8 +15,8 @@ def _load_keywords(keywords_config: Dict) -> Dict[str, List[str]]:
     """Load keywords from config."""
     return {
         "product_indicators": {
-            "strong": keywords_config.get("product_indicators", {}).get("strong", []),
-            "moderate": keywords_config.get("product_indicators", {}).get("moderate", []),
+            "strong": keywords_config.get("product_indicators", {}).get("strong_product", []),
+            "moderate": keywords_config.get("product_indicators", {}).get("sales_motion", []),
         },
         "services_indicators": {
             "strong": keywords_config.get("services_indicators", {}).get("strong", []),
@@ -25,6 +25,13 @@ def _load_keywords(keywords_config: Dict) -> Dict[str, List[str]]:
         "staffing_indicators": {
             "strong": keywords_config.get("staffing_indicators", {}).get("strong", []),
             "moderate": keywords_config.get("staffing_indicators", {}).get("moderate", []),
+        },
+        "enterprise_indicators": {
+            "enterprise_noise": keywords_config.get("enterprise_indicators", {}).get("enterprise_noise", []),
+            "huge_hiring": keywords_config.get("enterprise_indicators", {}).get("huge_hiring", []),
+        },
+        "partnership_indicators": {
+            "partner_fit": keywords_config.get("partnership_indicators", {}).get("partner_fit", []),
         },
     }
 
@@ -78,6 +85,8 @@ def classify_domain(domain: str, pages: Dict[str, str], keywords_config: Dict = 
         - business_type: BusinessType enum value
         - confidence: float 0..1
         - reasons: list[str] (explanation of classification)
+        - enterprise_detected: bool (whether enterprise noise detected)
+        - partnership_fit_detected: bool (whether partnership indicators detected)
     """
     if keywords_config is None:
         keywords_config = {}
@@ -100,6 +109,8 @@ def classify_domain(domain: str, pages: Dict[str, str], keywords_config: Dict = 
             "business_type": BusinessType.UNKNOWN.value,
             "confidence": 0.0,
             "reasons": ["No text content found on pages"],
+            "enterprise_detected": False,
+            "partnership_fit_detected": False,
         }
     
     # Count keywords
@@ -114,6 +125,15 @@ def classify_domain(domain: str, pages: Dict[str, str], keywords_config: Dict = 
     staffing_strong = _count_keywords(all_text, keywords["staffing_indicators"]["strong"])
     staffing_moderate = _count_keywords(all_text, keywords["staffing_indicators"]["moderate"])
     staffing_count = staffing_strong * 2 + staffing_moderate
+    
+    # Check for enterprise indicators
+    enterprise_noise_count = _count_keywords(all_text, keywords["enterprise_indicators"]["enterprise_noise"])
+    huge_hiring_count = _count_keywords(all_text, keywords["enterprise_indicators"]["huge_hiring"])
+    enterprise_detected = (enterprise_noise_count > 0) or (huge_hiring_count > 0)
+    
+    # Check for partnership fit indicators
+    partnership_fit_count = _count_keywords(all_text, keywords["partnership_indicators"]["partner_fit"])
+    partnership_fit_detected = partnership_fit_count > 0
     
     # Check for strong indicators in page paths
     page_paths = list(pages.keys())
@@ -151,6 +171,8 @@ def classify_domain(domain: str, pages: Dict[str, str], keywords_config: Dict = 
         reasons.append(f"Services indicators ({services_count}) significantly exceed product indicators ({product_count})")
         if has_services:
             reasons.append("Services page found")
+        if partnership_fit_detected:
+            reasons.append("Partnership fit indicators detected")
     
     # Rule 3: Product company
     elif product_count - services_count >= services_product_delta:
@@ -177,6 +199,10 @@ def classify_domain(domain: str, pages: Dict[str, str], keywords_config: Dict = 
             confidence = 0.3
             reasons.append("Insufficient evidence for classification")
     
+    # Add enterprise detection to reasons if found
+    if enterprise_detected:
+        reasons.append("Enterprise noise indicators detected")
+    
     # Adjust confidence based on total keyword counts
     total_keywords = product_count + services_count + staffing_count
     if total_keywords < 3:
@@ -186,6 +212,8 @@ def classify_domain(domain: str, pages: Dict[str, str], keywords_config: Dict = 
         "business_type": business_type.value if isinstance(business_type, BusinessType) else business_type,
         "confidence": round(confidence, 2),
         "reasons": reasons,
+        "enterprise_detected": enterprise_detected,
+        "partnership_fit_detected": partnership_fit_detected,
     }
     
     logger.debug(
@@ -196,7 +224,8 @@ def classify_domain(domain: str, pages: Dict[str, str], keywords_config: Dict = 
         product_count=product_count,
         services_count=services_count,
         staffing_count=staffing_count,
+        enterprise_detected=enterprise_detected,
+        partnership_fit_detected=partnership_fit_detected,
     )
     
     return result
-

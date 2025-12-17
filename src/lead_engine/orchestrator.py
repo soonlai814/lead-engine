@@ -378,7 +378,7 @@ class Orchestrator:
                     "business_type": classification["business_type"],
                 }
                 
-                scores = score_lead(company_dict, snapshot, classification, self.scoring)
+                scores = score_lead(company_dict, snapshot, classification, self.scoring, self.keywords)
                 
                 # Route lead
                 routing = route_lead(classification, scores, snapshot, self.scoring)

@@ -614,147 +614,332 @@ def route_lead(classification: dict, scores: dict) -> dict
 
 ---
 
-# Appendix A: Query Packs
+# Appendix A: Query Packs (Updated)
 
 Below is a starter pack that’s comprehensive but still manageable. Tune volumes via `runtime.yaml`.
+Recommended default cadence:
+- Hiring (ATS): daily
+- Launch: daily (lower volume)
+- Funding/Accelerator: weekly (enrichment + priority boost)
+- Ecosystem/Community: weekly (pipeline + niche)
 
-## A1) Hiring — ATS Packs (High Priority)
+## A0) Global Query Conventions (applies to all packs)
 
-### `hiring_greenhouse_v1`
+### Stage/intent modifiers (additive tokens)
+Use these tokens in queries to bias toward early-stage execution:
+- `"founding" OR "founder" OR "early-stage" OR "seed" OR "pre-seed" OR "startup"`
+- `"0 to 1" OR "0-1" OR "MVP" OR "greenfield" OR "build" OR "shipping"`
+- `"small team" OR "lean team"`
+
+### Optional noise-reduction (careful; can over-filter)
+- `-"enterprise"` `-"Fortune"` `-"bank"` `-"university"` (only if your results get too enterprise-heavy)
+
+---
+
+## A1) Hiring — ATS Packs (High Priority, Early-Stage Biased)
+
+### `hiring_greenhouse_stage_v2`
 - source_type: `hiring`
 - queries:
-  - `site:boards.greenhouse.io ("Backend Engineer" OR "Full Stack" OR "Software Engineer")`
-  - `site:boards.greenhouse.io ("AI Engineer" OR "Machine Learning" OR "Data Engineer")`
-  - `site:boards.greenhouse.io ("DevOps" OR "Platform Engineer" OR "SRE")`
-  - `site:boards.greenhouse.io ("Solidity" OR "Blockchain" OR "Web3")`
+  - `site:boards.greenhouse.io ("Founding Engineer" OR "Founding Software Engineer" OR "Founding Full Stack")`
+  - `site:boards.greenhouse.io ("Full Stack" OR "Full-Stack" OR "Backend Engineer") ("startup" OR "early-stage" OR "seed" OR "pre-seed")`
+  - `site:boards.greenhouse.io ("Platform Engineer" OR "DevOps" OR "SRE") ("startup" OR "seed")`
+  - `site:boards.greenhouse.io ("Machine Learning" OR "AI Engineer" OR "LLM" OR "GenAI") ("startup" OR "seed" OR "early-stage")`
+  - `site:boards.greenhouse.io ("Product Engineer" OR "Engineering Generalist") ("startup" OR "early-stage")`
+  - `site:boards.greenhouse.io ("Solidity" OR "Blockchain" OR "Web3") ("startup" OR "seed")`
 
-### `hiring_lever_v1`
+### `hiring_lever_stage_v2`
+- source_type: `hiring`
 - queries:
-  - `site:jobs.lever.co ("Backend" OR "Full Stack" OR "Software Engineer")`
-  - `site:jobs.lever.co ("AI Engineer" OR "ML Engineer" OR "Data Engineer")`
-  - `site:jobs.lever.co ("DevOps" OR "Platform")`
-  - `site:jobs.lever.co ("Blockchain" OR "Solidity" OR "Web3")`
+  - `site:jobs.lever.co ("Founding Engineer" OR "Founding Full Stack" OR "Founding Backend")`
+  - `site:jobs.lever.co ("Full Stack" OR "Backend") ("startup" OR "seed" OR "early-stage")`
+  - `site:jobs.lever.co ("Platform" OR "DevOps" OR "SRE") ("startup" OR "seed")`
+  - `site:jobs.lever.co ("AI Engineer" OR "ML Engineer" OR "LLM" OR "GenAI") ("startup" OR "seed")`
+  - `site:jobs.lever.co ("Solidity" OR "Blockchain" OR "Web3") ("startup" OR "seed")`
 
-### `hiring_ashby_v1`
+### `hiring_ashby_stage_v2`
+- source_type: `hiring`
 - queries:
-  - `site:jobs.ashbyhq.com ("Software Engineer" OR "Backend" OR "Full Stack")`
-  - `site:jobs.ashbyhq.com ("AI" OR "Machine Learning" OR "Data Engineer")`
+  - `site:jobs.ashbyhq.com ("Founding" OR "0 to 1" OR "0-1") ("Engineer" OR "Full Stack" OR "Backend")`
+  - `site:jobs.ashbyhq.com ("Full Stack" OR "Backend" OR "Product Engineer") ("startup" OR "seed" OR "early-stage")`
+  - `site:jobs.ashbyhq.com ("AI Engineer" OR "Machine Learning" OR "LLM" OR "GenAI") ("startup" OR "seed")`
+  - `site:jobs.ashbyhq.com ("Platform" OR "DevOps" OR "SRE") ("startup" OR "seed")`
 
-### `hiring_workable_v1`
+### `hiring_workable_stage_v2`
+- source_type: `hiring`
 - queries:
-  - `site:apply.workable.com ("Software Engineer" OR "Backend" OR "Full Stack")`
+  - `site:apply.workable.com ("Founding Engineer" OR "Full Stack" OR "Backend") ("startup" OR "seed" OR "early-stage")`
+  - `site:apply.workable.com ("AI Engineer" OR "Machine Learning" OR "LLM") ("startup" OR "seed")`
 
-## A2) Launch Packs
-
-### `launch_showhn_v1`
+### `hiring_teamtailor_stage_v2`
+- source_type: `hiring`
 - queries:
-  - `"Show HN" "launched" "we built"`
-  - `"Show HN" ("MVP" OR "beta" OR "launch") ("AI" OR "SaaS" OR "developer tool")`
+  - `site:teamtailor.com ("Founding Engineer" OR "Full Stack" OR "Backend") ("startup" OR "seed" OR "early-stage")`
+  - `site:teamtailor.com ("AI Engineer" OR "Machine Learning" OR "LLM") ("startup" OR "seed")`
+  - `site:teamtailor.com ("DevOps" OR "Platform" OR "SRE") ("startup" OR "seed")`
 
-### `launch_generic_v1`
+### `hiring_recruitee_stage_v2`
+- source_type: `hiring`
 - queries:
-  - `("just launched" OR "now live" OR "we launched") ("AI tool" OR "SaaS")`
-  - `("shipping" OR "launching") ("MVP" OR "beta") ("startup")`
+  - `site:recruitee.com ("Founding" OR "Full Stack" OR "Backend") ("startup" OR "seed" OR "early-stage")`
+  - `site:recruitee.com ("AI Engineer" OR "Machine Learning" OR "LLM") ("startup" OR "seed")`
 
-## A3) Funding / Accelerator Packs
-
-### `funding_accelerator_v1`
+### `hiring_smartrecruiters_stage_v2`  *(lower priority; enterprise-skew)*
+- source_type: `hiring`
 - queries:
-  - `("Y Combinator" OR "YC") "W" "companies"`
-  - `"Techstars" "class of" "companies"`
-  - `"accelerator" "demo day" "companies"`
-
-### `funding_rounds_v1`
-- queries:
-  - `("raised" OR "secures") ("seed" OR "pre-seed" OR "Series A") "startup"`
-  - `"led by" "seed round" "startup" ("platform" OR "SaaS")`
-
-## A4) Ecosystem / Community Packs
-
-### `ecosystem_web3_v1`
-- queries:
-  - `"Base ecosystem" "directory" "projects"`
-  - `"Solana" "hackathon winners" "projects"`
-  - `"Polygon grants" "recipients"`
-
-### `ecosystem_ai_builders_v1`
-- queries:
-  - `"AI builder program" "cohort" "startups"`
-  - `site:notion.site ("ecosystem" OR "builders") ("AI" OR "agents")`
+  - `site:careers.smartrecruiters.com ("Full Stack" OR "Backend") ("startup" OR "seed" OR "early-stage")`
+  - `site:careers.smartrecruiters.com ("AI Engineer" OR "Machine Learning") ("startup" OR "seed")`
 
 ---
 
-# Appendix B: Keyword Taxonomies
+## A1P) Partnership Discovery (Agencies / Consultancies / Integrators)
 
-## B1) Role Keywords (ATS parsing)
-- backend: `backend`, `api`, `server`, `platform`
-- frontend: `frontend`, `react`, `web`, `ui`
-- fullstack: `full stack`, `fullstack`
-- devops: `devops`, `sre`, `infrastructure`, `kubernetes`, `terraform`
-- ml_ai: `machine learning`, `ml`, `ai engineer`, `llm`, `genai`
-- data: `data engineer`, `analytics`, `pipeline`
-- web3: `solidity`, `blockchain`, `web3`, `smart contract`
+Purpose: build a **partnership pipeline**, not client pipeline. These leads route to `outreach_partnership`.
 
-## B2) Product Indicators
-- `pricing`, `docs`, `documentation`, `api`, `changelog`, `integrations`, `book a demo`, `customers`, `case studies` (careful), `status page`
+### `partner_agency_services_v1`
+- source_type: `hiring`  *(discovery category; routing handled later)*
+- queries:
+  - `("software development agency" OR "product studio" OR "MVP development") ("looking for partners" OR "white label" OR "overflow")`
+  - `("digital agency" OR "branding agency") ("need a dev partner" OR "engineering partner" OR "technical partner")`
+  - `("fractional CTO" OR "CTO as a service") ("partner" OR "collaboration" OR "referral")`
 
-## B3) Services/Agency Indicators
-- `agency`, `consulting`, `software house`, `outsourcing`, `we help clients`, `our services`, `development services`, `custom solutions`
+### `partner_agency_hiring_pressure_v1`
+- source_type: `hiring`
+- queries:
+  - `("agency" OR "studio" OR "consulting") ("hiring" OR "we are hiring") ("full stack" OR "backend" OR "AI engineer")`
+  - `("product studio" OR "software agency") ("DevOps" OR "platform engineer")`
 
-## B4) Staffing Indicators
-- `staffing`, `recruiting`, `talent`, `hire developers`, `placement`, `headhunting`
-
----
-
-# Appendix C: Scoring Weights
-
-## C1) MVP Intent Score (default)
-- ATS board exists: +3
-- engineering_roles_count >= 3: +3
-- engineering_roles_count >= 1: +2
-- role tags include backend/fullstack/devops/ml: +2
-- pricing page detected: +2
-- docs/API detected: +2
-- recent launch <= 30d: +3
-- launch 31–90d: +1
-- accelerator member: +2
-- recent funding: +2
-- ecosystem listed: +1
-
-Penalties:
-- services classification: -8
-- staffing classification: -10
-
-Thresholds:
-- >= 8: prioritize
-- 5–7: normal
-- < 5: hold/ignore
-
-## C2) Partnership Fit Score (default)
-- services type confirmed: +2
-- offers MVP/dev: +2
-- hiring devs: +2
-- niche match (AI/Web3/SaaS): +2
-- case studies present: +1
-- strong region: +1
+### `partner_system_integrator_v1`
+- source_type: `hiring`
+- queries:
+  - `("system integrator" OR "implementation partner") ("SaaS" OR "AI" OR "automation")`
+  - `("HubSpot partner" OR "Salesforce partner") ("engineering" OR "custom integration")`
 
 ---
 
-# Appendix D: Sample Outputs
+## A2) Launch Packs (Secondary Discovery + Messaging Hooks)
 
-## D1) MVP CSV Row (example)
+Bias toward **recent launches / shipping cadence** (better than generic “launch” queries).
+
+### `launch_showhn_recent_v2`
+- source_type: `launch`
+- queries:
+  - `"Show HN" ("launched" OR "built" OR "released") ("MVP" OR "beta" OR "v1")`
+  - `"Show HN" ("we built" OR "we made") ("AI" OR "agent" OR "automation" OR "developer tool")`
+
+### `launch_shipping_cadence_v2`
+- source_type: `launch`
+- queries:
+  - `("now live" OR "just launched" OR "released v1" OR "shipping") ("AI" OR "SaaS" OR "automation")`
+  - `("changelog" OR "release notes") ("v1" OR "v0.1") ("SaaS" OR "platform")`
+  - `("public beta" OR "beta launch") ("AI" OR "SaaS")`
+
+### `launch_producthunt_makers_v2` *(optional if you want PH as a channel)*
+- source_type: `launch`
+- queries:
+  - `site:producthunt.com ("AI" OR "productivity" OR "developer tool") ("today" OR "featured")`
+  - `site:producthunt.com ("makers" OR "maker") ("launched" OR "shipping")`
+
+---
+
+## A3) Funding / Accelerator Packs (Enrichment + Priority Boost)
+
+Funding is a **priority multiplier**, not your primary discovery engine.
+
+### `funding_seed_preseed_v2`
+- source_type: `funding`
+- queries:
+  - `("raised" OR "secures" OR "announces") ("pre-seed" OR "seed") ("AI" OR "SaaS" OR "platform")`
+  - `("led by") ("seed round" OR "pre-seed") ("startup") ("SaaS" OR "platform")`
+  - `("closing" OR "closed") ("seed round" OR "pre-seed") ("startup")`
+
+### `accelerator_cohorts_v2`
+- source_type: `funding`
+- queries:
+  - `site:ycombinator.com/companies ("AI" OR "B2B" OR "fintech")`
+  - `("Techstars" OR "500 Global" OR "Antler") ("cohort" OR "batch" OR "demo day") "companies"`
+  - `("accelerator" OR "incubator") ("demo day" OR "batch") ("AI" OR "SaaS") "companies"`
+
+### `funding_seriesA_filter_v2` *(optional)*
+- source_type: `funding`
+- queries:
+  - `("raised" OR "announces") ("Series A") ("B2B" OR "SaaS" OR "AI") "startup"`
+
+---
+
+## A4) Ecosystem / Community Packs (Pipeline + Niche)
+
+Use these to find builders who may be earlier-stage, and to enrich positioning for Web3/AI.
+
+### `ecosystem_web3_directories_v2`
+- source_type: `ecosystem`
+- queries:
+  - `"Base ecosystem" ("directory" OR "projects" OR "companies")`
+  - `"Solana ecosystem" ("directory" OR "projects")`
+  - `"Polygon ecosystem" ("directory" OR "projects")`
+  - `"Ethereum" "hackathon winners" "projects"`
+
+### `ecosystem_grants_hackathons_v2`
+- source_type: `ecosystem`
+- queries:
+  - `("grants" OR "grant program") "recipients" ("Base" OR "Solana" OR "Polygon")`
+  - `("hackathon" OR "demo day") ("winners" OR "finalists") ("AI" OR "agent" OR "web3")`
+
+### `ecosystem_ai_builders_v2`
+- source_type: `ecosystem`
+- queries:
+  - `"AI builder program" ("cohort" OR "batch") ("startups" OR "companies")`
+  - `("AI agents" OR "agentic") ("community" OR "builders") ("directory" OR "list")`
+  - `site:notion.site ("builders" OR "ecosystem") ("AI" OR "agents")`
+
+---
+
+# Appendix B: Keyword Taxonomies (Updated)
+
+## B0) Stage & Intent Keywords (new)
+Use these for “early-stage bias” and for outreach-note generation.
+
+- stage_early: `founding`, `founder`, `early-stage`, `seed`, `pre-seed`, `startup`, `small team`, `lean team`
+- stage_build: `0 to 1`, `0-1`, `greenfield`, `MVP`, `beta`, `v1`, `shipping`, `launch`
+- urgency: `urgent`, `asap`, `immediately`, `high priority`
+
+## B1) Role Keywords (ATS parsing) — expanded
+- backend: `backend`, `api`, `server`, `platform`, `distributed systems`, `microservices`
+- frontend: `frontend`, `react`, `next.js`, `web`, `ui`, `typescript`
+- fullstack: `full stack`, `fullstack`, `product engineer`, `engineering generalist`
+- devops: `devops`, `sre`, `infrastructure`, `kubernetes`, `terraform`, `observability`
+- ml_ai: `machine learning`, `ml`, `ai engineer`, `llm`, `genai`, `rag`, `agents`, `prompt`
+- data: `data engineer`, `analytics`, `pipeline`, `etl`, `warehouse`
+- web3: `solidity`, `blockchain`, `web3`, `smart contract`, `defi`, `evm`
+
+## B2) Product Indicators (keep + tighten)
+- strong_product: `pricing`, `docs`, `documentation`, `api`, `changelog`, `integrations`, `status page`
+- sales_motion: `book a demo`, `talk to sales`, `request a demo`, `case studies` *(low weight, can be faked)*, `customers`
+
+## B3) Services/Agency Indicators (route to partnership, not delete)
+- services: `agency`, `consulting`, `product studio`, `software house`, `outsourcing`, `we help clients`, `our services`, `development services`, `custom solutions`, `implementation partner`
+
+## B4) Staffing Indicators (ignore by default)
+- staffing: `staffing`, `recruiting`, `talent`, `placement`, `headhunting`, `hire developers`, `body shop`
+
+## B5) Enterprise / Low-Fit Indicators (new penalties)
+Use to reduce “big corp hiring” noise.
+- enterprise_noise: `enterprise`, `fortune`, `global leader`, `bank`, `government`, `university`, `public sector`, `conglomerate`
+- huge_hiring: `100+ openings`, `our 10,000 employees`, `worldwide offices`
+
+## B6) Partnership Fit Indicators (new)
+- partner_fit: `white label`, `referral`, `overflow`, `capacity`, `delivery partner`, `technical partner`, `implementation partner`, `co-delivery`
+
+---
+
+# Appendix C: Scoring Weights (Updated)
+
+Scoring is now explicitly aligned to:
+- **ICP = MVP / early-stage execution teams**
+- **ATS = best discovery signal**
+- **Funding/launch/ecosystem = multipliers + secondary discovery**
+- **Partnership = separate lane**
+
+## C0) Common Concepts
+- `stage_boost`: applied when early-stage keywords present
+- `enterprise_penalty`: applied when enterprise noise present
+- `hiring_intensity`: derived from job count and engineering share
+
+---
+
+## C1) MVP Intent Score (0–100 suggested)
+
+### Hiring (weight dominant)
+- ATS board exists: +20
+- engineering_roles_count:
+  - 1–2: +8
+  - 3–5: +15
+  - 6–10: +20
+  - 11+: +12 *(cap to avoid enterprise; often noisy)*
+- founding/0→1 language in job titles/snippets: +12
+- role tags include backend/fullstack/devops/ml: +8
+- “product engineer” / “engineering generalist”: +6
+
+### Product signals (quality filter)
+- pricing page detected: +8
+- docs/API detected: +8
+- integrations/status page detected: +4
+
+### Recency multipliers (secondary)
+- recent launch <= 30d: +10
+- launch 31–90d: +4
+- pre-seed/seed funding (<= 12 mo): +10
+- Series A (<= 18 mo): +8
+- accelerator member: +8
+- ecosystem listed / grant / hackathon: +4
+
+### Penalties (hard filters)
+- classified services/agency/consultancy: -25 *(route to partnership lane instead)*
+- classified staffing/recruiter: -40 *(ignore)*
+- enterprise_noise detected: -10
+- huge_hiring indicators: -10
+
+### Thresholds (runway-focused)
+- **>= 65**: A-tier (personalized outreach now)
+- **50–64**: B-tier (semi-templated outreach)
+- **< 50**: hold/nurture (or ignore if low quality)
+
+---
+
+## C2) Partnership Fit Score (0–100 suggested)
+
+### Base
+- business_type in {service_agency, consultancy, system_integrator}: +20
+
+### Signals of good partner
+- mentions “product studio” / “MVP development”: +10
+- mentions “white label” / “overflow” / “referral”: +15
+- hiring engineers (capacity pressure): +10
+- niche alignment (AI/Web3/SaaS/dev tooling): +10
+- strong portfolio/case studies present: +6
+- has clear inbound channel (newsletter/community): +6
+
+### Penalties
+- staffing/recruiter language: -30 *(not a partner; ignore by default)*
+- extremely broad “we do everything” agency: -10
+
+### Thresholds
+- **>= 60**: partnership outreach
+- **45–59**: monitor
+- **< 45**: ignore
+
+---
+
+# Appendix D: Sample Outputs (Updated)
+
+## D1) MVP CSV Row (A-tier example)
 - company_name: `ExampleAI`
 - company_domain: `exampleai.com`
 - primary_source: `hiring`
 - evidence_url: `https://jobs.lever.co/exampleai`
-- mvp_intent_score: `10`
-- roles_detected: `["backend","ml_ai"]`
-- signals: `["ats_board_found","hiring_engineering","product_docs_found"]`
-- recommended_channel: `email`
-- outreach_note: `Noticed you're hiring backend/ML roles — happy to share a quick teardown to speed up execution.`
+- mvp_intent_score: `72`
+- roles_detected: `["fullstack","ml_ai"]`
+- signals: `["ats_board_found","hiring_engineering","stage_early","product_docs_found"]`
+- recommended_channel: `linkedin_dm`
+- outreach_note: `Saw you're hiring a founding/full-stack role — teams at this stage usually hit execution bottlenecks. I can ship production MVP increments fast (CTO + delivery).`
 
-## D2) Partnership CSV Row (example)
+## D2) MVP CSV Row (B-tier example)
+- company_name: `ShippingTool`
+- company_domain: `shippingtool.io`
+- primary_source: `launch`
+- evidence_url: `https://news.ycombinator.com/item?id=xxxx`
+- mvp_intent_score: `56`
+- roles_detected: `[]`
+- signals: `["recent_launch_0_30d","builder_post"]`
+- recommended_channel: `x_dm`
+- outreach_note: `Congrats on the v1 launch — happy to share a quick teardown + 3 quick wins to speed up the next 2 weeks of shipping.`
+
+## D3) Partnership CSV Row (strong partner example)
 - company_name: `Example Studio`
+- company_domain: `examplestudio.com`
 - business_type: `service_agency`
-- partnership_fit_score: `7`
-- outreach_note: `Looks like you ship MVPs for clients — open to a partnership for overflow engineering + AI/Web3 builds?`
+- partnership_fit_score: `67`
+- signals: `["services_detected","partner_fit_white_label","hiring_engineering"]`
+- recommended_channel: `linkedin_dm`
+- outreach_note: `Looks like you ship MVPs for clients. Open to a co-delivery partnership? I handle complex backend/AI agents while you run design/PM — fast, clean, and white-label friendly.`
+
