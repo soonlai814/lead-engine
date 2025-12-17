@@ -1,0 +1,105 @@
+# Runtime Configuration
+
+# ============================================
+# Rate Limiting
+# ============================================
+rate_limits:
+  # Per-domain rate limit
+  per_domain_requests_per_second: 1
+  
+  # Global rate limit
+  global_requests_per_minute: 60
+  
+  # SerpAPI rate limits (per query pack)
+  serpapi_daily_cap_default: 100
+
+# ============================================
+# HTTP Client Configuration
+# ============================================
+http:
+  connect_timeout_seconds: 5
+  read_timeout_seconds: 15
+  max_retries: 2
+  retry_backoff_factor: 2.0
+  
+  # User agents (rotated)
+  user_agents:
+    - "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    - "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    - "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
+# ============================================
+# Caching
+# ============================================
+cache:
+  ttl_hours: 24
+  content_hash_algorithm: sha256
+  
+  # Cache storage
+  storage_type: filesystem  # filesystem | memory
+  cache_dir: data/cache
+
+# ============================================
+# Concurrency
+# ============================================
+concurrency:
+  max_concurrent_requests: 10
+  max_concurrent_domains: 5
+  
+  # Async workers
+  async_enabled: false  # Set to true for async/await implementation
+
+# ============================================
+# Error Handling
+# ============================================
+error_handling:
+  # HTTP status codes to retry
+  retry_status_codes: [429, 503, 502, 504]
+  
+  # Cooldown after 429/503 (seconds)
+  rate_limit_cooldown_seconds: 60
+  
+  # Max failures before skipping domain
+  max_failures_per_domain: 3
+  
+  # Failed URL retry queue
+  retry_queue_enabled: true
+  retry_queue_max_age_hours: 48
+
+# ============================================
+# Logging
+# ============================================
+logging:
+  level: INFO  # DEBUG | INFO | WARNING | ERROR
+  format: json  # json | text
+  correlation_id_enabled: true
+  
+  # Log file (optional)
+  file_enabled: false
+  file_path: logs/lead_engine.log
+  file_rotation: daily
+
+# ============================================
+# Database
+# ============================================
+database:
+  pool_size: 5
+  max_overflow: 10
+  pool_timeout: 30
+  echo: false  # Set to true for SQL query logging
+
+# ============================================
+# Export
+# ============================================
+export:
+  output_dir: data/output
+  csv_encoding: utf-8
+  include_score_breakdown_json: true
+  
+  # File naming
+  mvp_leads_filename: mvp_clients_ranked.csv
+  partnership_targets_filename: partnership_targets_ranked.csv
+  
+  # Timestamp format
+  timestamp_format: "%Y%m%d_%H%M%S"
+

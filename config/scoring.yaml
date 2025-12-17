@@ -1,0 +1,90 @@
+# Scoring Weights and Thresholds
+
+# ============================================
+# MVP Intent Score Weights
+# ============================================
+mvp_intent_weights:
+  # Hiring signals
+  ats_board_exists: 3
+  engineering_roles_count_3plus: 3
+  engineering_roles_count_1plus: 2
+  role_tags_backend_fullstack_devops_ml: 2
+  
+  # Product indicators
+  pricing_page_detected: 2
+  docs_api_detected: 2
+  
+  # Recency signals
+  recent_launch_0_30d: 3
+  recent_launch_31_90d: 1
+  
+  # Funding/accelerator
+  accelerator_member: 2
+  recent_funding: 2
+  
+  # Ecosystem
+  ecosystem_listed: 1
+
+# MVP Intent Penalties
+mvp_intent_penalties:
+  services_classification: -8
+  staffing_classification: -10
+
+# MVP Intent Thresholds
+mvp_intent_thresholds:
+  prioritize: 8
+  normal: 5
+  hold_ignore: 5  # < 5
+
+# ============================================
+# Partnership Fit Score Weights
+# ============================================
+partnership_fit_weights:
+  services_type_confirmed: 2
+  offers_mvp_dev: 2
+  hiring_devs: 2
+  niche_match_ai_web3_saas: 2
+  case_studies_present: 1
+  strong_region: 1
+
+# Partnership Fit Thresholds
+partnership_fit_thresholds:
+  high: 6
+  medium: 4
+  low: 2
+
+# ============================================
+# Classification Thresholds
+# ============================================
+classification:
+  # Rule-based classifier thresholds
+  staffing_count_threshold: 2
+  services_product_delta: 2
+  
+  # Confidence thresholds
+  high_confidence: 0.75
+  medium_confidence: 0.65
+  low_confidence: 0.50
+  
+  # AI fallback trigger
+  ai_fallback_confidence_threshold: 0.65
+  ai_fallback_max_calls_per_day: 100
+
+# ============================================
+# Routing Rules
+# ============================================
+routing:
+  # Route flags
+  product_company_route: outreach_mvp_client
+  service_agency_route: outreach_partnership
+  consultancy_route: outreach_partnership
+  system_integrator_route: outreach_partnership
+  staffing_recruiter_route: ignore
+  
+  # Unknown classification routing
+  unknown_with_strong_hiring: outreach_mvp_client
+  unknown_default: ignore
+  
+  # Strong hiring threshold (for unknown routing)
+  strong_hiring_threshold: 3  # engineering_roles_count
+

@@ -1,0 +1,165 @@
+# SERP Query Packs Configuration
+# Each pack defines queries to run, SERP parameters, and execution rules
+
+query_packs:
+  # ============================================
+  # Hiring — ATS Packs (High Priority)
+  # ============================================
+  
+  hiring_greenhouse_v1:
+    source_type: hiring
+    results_per_page: 10
+    pages: 3
+    daily_cap: 100
+    serp_params:
+      hl: en
+      gl: us
+      num: 10
+    queries:
+      - 'site:boards.greenhouse.io ("Backend Engineer" OR "Full Stack" OR "Software Engineer")'
+      - 'site:boards.greenhouse.io ("AI Engineer" OR "Machine Learning" OR "Data Engineer")'
+      - 'site:boards.greenhouse.io ("DevOps" OR "Platform Engineer" OR "SRE")'
+      - 'site:boards.greenhouse.io ("Solidity" OR "Blockchain" OR "Web3")'
+    normalization_strategy: ats_greenhouse
+
+  hiring_lever_v1:
+    source_type: hiring
+    results_per_page: 10
+    pages: 3
+    daily_cap: 100
+    serp_params:
+      hl: en
+      gl: us
+      num: 10
+    queries:
+      - 'site:jobs.lever.co ("Backend" OR "Full Stack" OR "Software Engineer")'
+      - 'site:jobs.lever.co ("AI Engineer" OR "ML Engineer" OR "Data Engineer")'
+      - 'site:jobs.lever.co ("DevOps" OR "Platform")'
+      - 'site:jobs.lever.co ("Blockchain" OR "Solidity" OR "Web3")'
+    normalization_strategy: ats_lever
+
+  hiring_ashby_v1:
+    source_type: hiring
+    results_per_page: 10
+    pages: 2
+    daily_cap: 50
+    serp_params:
+      hl: en
+      gl: us
+      num: 10
+    queries:
+      - 'site:jobs.ashbyhq.com ("Software Engineer" OR "Backend" OR "Full Stack")'
+      - 'site:jobs.ashbyhq.com ("AI" OR "Machine Learning" OR "Data Engineer")'
+    normalization_strategy: ats_ashby
+
+  hiring_workable_v1:
+    source_type: hiring
+    results_per_page: 10
+    pages: 2
+    daily_cap: 50
+    serp_params:
+      hl: en
+      gl: us
+      num: 10
+    queries:
+      - 'site:apply.workable.com ("Software Engineer" OR "Backend" OR "Full Stack")'
+    normalization_strategy: ats_workable
+
+  # ============================================
+  # Launch Packs
+  # ============================================
+  
+  launch_showhn_v1:
+    source_type: launch
+    results_per_page: 10
+    pages: 2
+    daily_cap: 50
+    serp_params:
+      hl: en
+      gl: us
+      num: 10
+    queries:
+      - '"Show HN" "launched" "we built"'
+      - '"Show HN" ("MVP" OR "beta" OR "launch") ("AI" OR "SaaS" OR "developer tool")'
+    normalization_strategy: generic
+
+  launch_generic_v1:
+    source_type: launch
+    results_per_page: 10
+    pages: 2
+    daily_cap: 50
+    serp_params:
+      hl: en
+      gl: us
+      num: 10
+    queries:
+      - '("just launched" OR "now live" OR "we launched") ("AI tool" OR "SaaS")'
+      - '("shipping" OR "launching") ("MVP" OR "beta") ("startup")'
+    normalization_strategy: generic
+
+  # ============================================
+  # Funding / Accelerator Packs
+  # ============================================
+  
+  funding_accelerator_v1:
+    source_type: funding
+    results_per_page: 10
+    pages: 2
+    daily_cap: 30
+    serp_params:
+      hl: en
+      gl: us
+      num: 10
+    queries:
+      - '("Y Combinator" OR "YC") "W" "companies"'
+      - '"Techstars" "class of" "companies"'
+      - '"accelerator" "demo day" "companies"'
+    normalization_strategy: generic
+
+  funding_rounds_v1:
+    source_type: funding
+    results_per_page: 10
+    pages: 2
+    daily_cap: 30
+    serp_params:
+      hl: en
+      gl: us
+      num: 10
+    queries:
+      - '("raised" OR "secures") ("seed" OR "pre-seed" OR "Series A") "startup"'
+      - '"led by" "seed round" "startup" ("platform" OR "SaaS")'
+    normalization_strategy: generic
+
+  # ============================================
+  # Ecosystem / Community Packs
+  # ============================================
+  
+  ecosystem_web3_v1:
+    source_type: ecosystem
+    results_per_page: 10
+    pages: 2
+    daily_cap: 30
+    serp_params:
+      hl: en
+      gl: us
+      num: 10
+    queries:
+      - '"Base ecosystem" "directory" "projects"'
+      - '"Solana" "hackathon winners" "projects"'
+      - '"Polygon grants" "recipients"'
+    normalization_strategy: generic
+
+  ecosystem_ai_builders_v1:
+    source_type: ecosystem
+    results_per_page: 10
+    pages: 2
+    daily_cap: 30
+    serp_params:
+      hl: en
+      gl: us
+      num: 10
+    queries:
+      - '"AI builder program" "cohort" "startups"'
+      - 'site:notion.site ("ecosystem" OR "builders") ("AI" OR "agents")'
+    normalization_strategy: generic
+

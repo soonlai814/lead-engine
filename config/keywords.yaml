@@ -1,0 +1,156 @@
+# Keyword Taxonomies for Classification and Parsing
+
+# ============================================
+# ATS Role Taxonomy Keywords
+# ============================================
+role_keywords:
+  backend:
+    - backend
+    - back-end
+    - api
+    - server
+    - platform
+    - server-side
+  
+  frontend:
+    - frontend
+    - front-end
+    - react
+    - vue
+    - angular
+    - web
+    - ui
+    - ux
+  
+  fullstack:
+    - full stack
+    - fullstack
+    - full-stack
+  
+  devops:
+    - devops
+    - dev ops
+    - sre
+    - site reliability
+    - infrastructure
+    - kubernetes
+    - k8s
+    - terraform
+    - cloud engineer
+  
+  ml_ai:
+    - machine learning
+    - ml engineer
+    - ai engineer
+    - llm
+    - genai
+    - generative ai
+    - nlp
+    - computer vision
+  
+  data:
+    - data engineer
+    - analytics engineer
+    - pipeline
+    - etl
+  
+  web3:
+    - solidity
+    - blockchain
+    - web3
+    - smart contract
+    - crypto
+    - defi
+
+# ============================================
+# Product Indicators (for classification)
+# ============================================
+product_indicators:
+  strong:
+    - pricing
+    - docs
+    - documentation
+    - api
+    - changelog
+    - integrations
+    - status page
+    - api documentation
+  
+  moderate:
+    - customers
+    - case studies
+    - testimonials
+    - features
+    - product tour
+
+# ============================================
+# Services/Agency Indicators
+# ============================================
+services_indicators:
+  strong:
+    - agency
+    - consulting
+    - software house
+    - outsourcing
+    - we help clients
+    - our services
+    - development services
+    - custom solutions
+    - client projects
+  
+  moderate:
+    - services
+    - solutions
+    - consulting services
+    - development team
+
+# ============================================
+# Staffing/Recruiter Indicators
+# ============================================
+staffing_indicators:
+  strong:
+    - staffing
+    - recruiting
+    - talent
+    - hire developers
+    - placement
+    - headhunting
+    - recruitment agency
+  
+  moderate:
+    - talent acquisition
+    - hiring solutions
+    - talent pool
+
+# ============================================
+# Negative Keywords (exclude from leads)
+# ============================================
+negative_keywords:
+  - job board
+  - job aggregator
+  - career site
+  - indeed
+  - glassdoor
+  - linkedin jobs
+  - monster
+  - ziprecruiter
+
+# ============================================
+# Outreach Note Templates
+# ============================================
+outreach_templates:
+  hiring_engineering:
+    - "Noticed you're hiring {roles} roles — execution bandwidth is usually tight at this stage. Happy to help speed things up."
+    - "Saw your {roles} openings — would love to share how we've helped similar teams ship faster."
+  
+  recent_launch:
+    - "Saw your recent launch — happy to share a quick teardown to speed up iteration."
+    - "Congrats on the launch! Would love to help you iterate faster on {product_name}."
+  
+  accelerator:
+    - "Noticed you're part of {accelerator} — congrats! Happy to help with execution bandwidth."
+  
+  partnership:
+    - "Looks like you ship MVPs for clients — open to a partnership for overflow engineering + AI/Web3 builds?"
+    - "Noticed your agency focuses on {niche} — would love to explore a partnership for technical execution."
+
