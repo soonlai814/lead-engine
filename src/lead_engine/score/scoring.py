@@ -155,15 +155,23 @@ def score_lead(company: Dict, snapshot: Dict, classification: Dict, scoring_conf
         breakdown["recent_launch_31_90d"] = score
     
     # Funding/accelerator
-    if "preseed_seed_funding_12mo" in signals or "recent_funding" in signals:
-        score = weights.get("preseed_seed_funding_12mo", 10)
-        mvp_score += score
-        breakdown["preseed_seed_funding"] = score
-    
-    if "series_a_18mo" in signals:
-        score = weights.get("series_a_18mo", 8)
-        mvp_score += score
-        breakdown["series_a_funding"] = score
+    # Check for recent funding (pre-seed/seed within 12 months)
+    if "recent_funding" in signals:
+        # Check funding round from signal_details to determine score
+        funding_round = signal_details.get("funding_round", "").lower()
+        if funding_round in ["pre-seed", "seed"]:
+            score = weights.get("preseed_seed_funding_12mo", 10)
+            mvp_score += score
+            breakdown["preseed_seed_funding"] = score
+        elif "series a" in funding_round:
+            score = weights.get("series_a_18mo", 8)
+            mvp_score += score
+            breakdown["series_a_funding"] = score
+        else:
+            # Generic recent funding
+            score = weights.get("preseed_seed_funding_12mo", 10)
+            mvp_score += score
+            breakdown["recent_funding"] = score
     
     if "accelerator_member" in signals:
         score = weights.get("accelerator_member", 8)

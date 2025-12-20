@@ -52,6 +52,10 @@ class Store:
             target.last_seen_at = kwargs.get("last_seen_at", target.last_seen_at)
             if kwargs.get("serp_evidence"):
                 target.serp_evidence = kwargs["serp_evidence"]
+            if kwargs.get("serp_query_pack"):
+                target.serp_query_pack = kwargs["serp_query_pack"]
+            if kwargs.get("serp_query"):
+                target.serp_query = kwargs["serp_query"]
             self.session.commit()
             return target, False
         
@@ -64,10 +68,12 @@ class Store:
     def get_pending_discovery_targets(self, source_type: Optional[SourceType] = None, limit: Optional[int] = None):
         """Get discovery targets that haven't been processed yet."""
         # This would need a join or flag to track processing status
-        # For now, return all targets
+        # For now, return all targets ordered by most recent first
         query = self.session.query(DiscoveryTarget)
         if source_type:
             query = query.filter(DiscoveryTarget.source_type == source_type)
+        # Order by most recently created first, so new targets are processed before old ones
+        query = query.order_by(DiscoveryTarget.first_seen_at.desc())
         if limit:
             query = query.limit(limit)
         return query.all()

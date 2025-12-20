@@ -153,7 +153,51 @@ def generate_outreach_note(
     
     elif "recent_funding" in signals or "preseed_seed_funding_12mo" in signals:
         funding_round = signal_details.get("funding_round", "funding")
-        note = f"Congrats on your {funding_round} round! Happy to help with execution bandwidth as you scale."
+        accelerator_name = signal_details.get("accelerator_name")
+        
+        if accelerator_name:
+            note = f"Noticed you're part of {accelerator_name} — congrats! Happy to help with execution bandwidth."
+        elif funding_round:
+            note = f"Congrats on your {funding_round} round! Happy to help with execution bandwidth as you scale."
+        else:
+            note = "Congrats on your funding round! Happy to help with execution bandwidth as you scale."
+    
+    elif "accelerator_member" in signals:
+        accelerator_name = signal_details.get("accelerator_name", "an accelerator")
+        note = f"Noticed you're part of {accelerator_name} — congrats! Happy to help with execution bandwidth."
+    
+    # Ecosystem-based notes
+    elif "ecosystem_listed" in signals or "grant_recipient" in signals or "hackathon_winner" in signals:
+        ecosystem_tag = signal_details.get("ecosystem_tag", "")
+        program_type = signal_details.get("program_type", "")
+        program_name = signal_details.get("program_name", "")
+        
+        # Try to use template from config
+        template = _get_template(keywords_config, "ecosystem")
+        if template:
+            try:
+                note = template.format(
+                    ecosystem=ecosystem_tag or "ecosystem",
+                    program=program_name or program_type or "program"
+                )
+            except KeyError:
+                note = template.replace("{ecosystem}", ecosystem_tag or "ecosystem")
+        else:
+            # Fallback to default
+            if "grant_recipient" in signals:
+                if ecosystem_tag:
+                    note = f"Congrats on the {ecosystem_tag} grant! Happy to help with execution bandwidth as you build."
+                else:
+                    note = "Congrats on the grant! Happy to help with execution bandwidth as you build."
+            elif "hackathon_winner" in signals:
+                if ecosystem_tag:
+                    note = f"Congrats on winning the {ecosystem_tag} hackathon! Happy to help with execution bandwidth as you scale."
+                else:
+                    note = "Congrats on the hackathon win! Happy to help with execution bandwidth as you scale."
+            elif ecosystem_tag:
+                note = f"Noticed you're building in the {ecosystem_tag} ecosystem — happy to help with execution bandwidth."
+            else:
+                note = "Noticed you're building in an ecosystem — happy to help with execution bandwidth."
     
     # Partnership notes
     elif route_flag == "outreach_partnership":

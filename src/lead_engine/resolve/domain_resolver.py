@@ -140,13 +140,28 @@ def resolve_company_domain(parsed: Dict, source_url: Optional[str] = None) -> Op
             logger.debug("Resolved domain from company_domain", domain=domain)
             return domain
     
-    # Fallback: extract from source URL (ATS patterns)
+    # Try project_domain (for ecosystem sources)
+    project_domain = parsed.get("project_domain")
+    if project_domain:
+        domain = _normalize_domain(project_domain)
+        if domain:
+            logger.debug("Resolved domain from project_domain", domain=domain)
+            return domain
+    
+    # Fallback: extract from source URL
     if source_url:
+        # Try ATS URL patterns first
         domain = _extract_domain_from_ats_url(source_url)
+        if domain:
+            logger.debug("Resolved domain from ATS URL pattern", domain=domain, source_url=source_url)
+            return domain
+        
+        # Try extracting domain directly from URL (for non-ATS URLs like agency websites)
+        domain = _extract_domain_from_url(source_url)
         if domain:
             logger.debug("Resolved domain from source URL", domain=domain, source_url=source_url)
             return domain
     
-    logger.warning("Could not resolve company domain", parsed_keys=list(parsed.keys()))
+    logger.warning("Could not resolve company domain", parsed_keys=list(parsed.keys()), source_url=source_url)
     return None
 

@@ -100,6 +100,54 @@ def export(config_dir: str):
 
 
 @main.command()
+@click.option("--pack", type=str, help="Clear discovery targets for a specific query pack")
+@click.option("--source", type=click.Choice(["hiring", "launch", "funding", "ecosystem"], case_sensitive=False), help="Clear discovery targets for a specific source type")
+@click.option("--all", "clear_all", is_flag=True, help="Clear all discovery targets")
+@click.option("--config-dir", type=click.Path(exists=True), default="config", help="Config directory path")
+@click.option("--dry-run", is_flag=True, help="Dry run mode (show what would be deleted)")
+def clear_targets(pack: str, source: str, clear_all: bool, config_dir: str, dry_run: bool):
+    """Clear discovery targets from database."""
+    log = logger.bind(correlation_id="clear_targets")
+    log.info("Clearing discovery targets", pack=pack, source=source, clear_all=clear_all, dry_run=dry_run)
+    
+    try:
+        config_path = Path(config_dir)
+        orchestrator = Orchestrator(config_path=config_path, dry_run=dry_run)
+        
+        from .storage.models import DiscoveryTarget, SourceType
+        
+        query = orchestrator.db_session.query(DiscoveryTarget)
+        count_before = query.count()
+        
+        if clear_all:
+            if dry_run:
+                click.echo(f"[DRY RUN] Would delete {count_before} discovery targets")
+            else:
+                query.delete()
+                orchestrator.db_session.commit()
+                click.echo(f"Deleted {count_before} discovery targets")
+        elif pack:
+            deleted = query.filter(DiscoveryTarget.serp_query_pack == pack).delete()
+            if not dry_run:
+                orchestrator.db_session.commit()
+            click.echo(f"{'[DRY RUN] Would delete' if dry_run else 'Deleted'} {deleted} discovery targets for pack '{pack}'")
+        elif source:
+            deleted = query.filter(DiscoveryTarget.source_type == SourceType(source)).delete()
+            if not dry_run:
+                orchestrator.db_session.commit()
+            click.echo(f"{'[DRY RUN] Would delete' if dry_run else 'Deleted'} {deleted} discovery targets for source type '{source}'")
+        else:
+            click.echo("Error: Must specify --pack, --source, or --all")
+            sys.exit(1)
+        
+        log.info("Clear targets completed")
+    except Exception as e:
+        log.error("Clear targets failed", error=str(e), exc_info=True)
+        click.echo(f"Error: {e}")
+        sys.exit(1)
+
+
+@main.command()
 def status():
     """Show system status and metrics."""
     click.echo("Status command - TODO: Implement metrics display")

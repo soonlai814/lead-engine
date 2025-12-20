@@ -145,9 +145,10 @@ query_packs:
       gl: us
       num: 10
     queries:
-      - '("software development agency" OR "product studio" OR "MVP development") ("looking for partners" OR "white label" OR "overflow")'
-      - '("digital agency" OR "branding agency") ("need a dev partner" OR "engineering partner" OR "technical partner")'
-      - '("fractional CTO" OR "CTO as a service") ("partner" OR "collaboration" OR "referral")'
+      # Exclude ATS domains to find agency websites directly
+      - '("software development agency" OR "product studio" OR "MVP development") ("looking for partners" OR "white label" OR "overflow") -site:greenhouse.io -site:lever.co -site:workable.com -site:teamtailor.com -site:smartrecruiters.com -site:ashbyhq.com -site:recruitee.com'
+      - '("digital agency" OR "branding agency") ("need a dev partner" OR "engineering partner" OR "technical partner") -site:greenhouse.io -site:lever.co -site:workable.com -site:teamtailor.com -site:smartrecruiters.com -site:ashbyhq.com -site:recruitee.com'
+      - '("fractional CTO" OR "CTO as a service") ("partner" OR "collaboration" OR "referral") -site:greenhouse.io -site:lever.co -site:workable.com -site:teamtailor.com -site:smartrecruiters.com -site:ashbyhq.com -site:recruitee.com'
     normalization_strategy: generic
 
   partner_agency_hiring_pressure_v1:
@@ -160,8 +161,11 @@ query_packs:
       gl: us
       num: 10
     queries:
-      - '("agency" OR "studio" OR "consulting") ("hiring" OR "we are hiring") ("full stack" OR "backend" OR "AI engineer")'
-      - '("product studio" OR "software agency") ("DevOps" OR "platform engineer")'
+      # Exclude ATS domains to find agency websites directly
+      - '("agency" OR "studio" OR "consulting") ("hiring" OR "we are hiring") ("full stack" OR "backend" OR "AI engineer") -site:greenhouse.io -site:lever.co -site:workable.com -site:teamtailor.com -site:smartrecruiters.com -site:ashbyhq.com -site:recruitee.com'
+      - '("product studio" OR "software agency") ("DevOps" OR "platform engineer") -site:greenhouse.io -site:lever.co -site:workable.com -site:teamtailor.com -site:smartrecruiters.com -site:ashbyhq.com -site:recruitee.com'
+      # Alternative: find agency "about" or "services" pages
+      - '("software development agency" OR "product studio") ("about" OR "services" OR "what we do") ("full stack" OR "backend" OR "AI")'
     normalization_strategy: generic
 
   partner_system_integrator_v1:
@@ -174,8 +178,9 @@ query_packs:
       gl: us
       num: 10
     queries:
-      - '("system integrator" OR "implementation partner") ("SaaS" OR "AI" OR "automation")'
-      - '("HubSpot partner" OR "Salesforce partner") ("engineering" OR "custom integration")'
+      # Exclude ATS domains to find integrator websites directly
+      - '("system integrator" OR "implementation partner") ("SaaS" OR "AI" OR "automation") -site:greenhouse.io -site:lever.co -site:workable.com -site:teamtailor.com -site:smartrecruiters.com -site:ashbyhq.com -site:recruitee.com'
+      - '("HubSpot partner" OR "Salesforce partner") ("engineering" OR "custom integration") -site:greenhouse.io -site:lever.co -site:workable.com -site:teamtailor.com -site:smartrecruiters.com -site:ashbyhq.com -site:recruitee.com'
     normalization_strategy: generic
 
   # ============================================
